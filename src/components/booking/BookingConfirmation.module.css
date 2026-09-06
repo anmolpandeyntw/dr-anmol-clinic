@@ -1,0 +1,460 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  max-width: 580px;
+  margin: 0 auto;
+  padding: 12px 0;
+}
+
+/* Joyful Celebration Banner Header */
+.celebrationBanner {
+  width: 100%;
+  background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+  border-radius: var(--radius-xl);
+  padding: 24px 20px;
+  color: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.celebrationBanner::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.celebrationHeaderRow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.iconCircle {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4);
+  animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes popIn {
+  0% { transform: scale(0.4); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.checkIcon {
+  color: #FFFFFF;
+}
+
+.popperBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: rgba(16, 185, 129, 0.2);
+  color: #34D399;
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1px solid rgba(52, 211, 153, 0.3);
+}
+
+.celebrationTitle {
+  font-size: 24px;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin: 0;
+}
+
+.celebrationSub {
+  font-size: 14px;
+  color: #94A3B8;
+  margin: 0;
+  line-height: 1.5;
+  max-width: 460px;
+}
+
+/* Reassuring SMS & WhatsApp Notice Strip */
+.smsNoticeStrip {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  color: #E2E8F0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  max-width: 480px;
+}
+
+.noticeSparkle {
+  color: #F59E0B;
+  flex-shrink: 0;
+}
+
+.joyChipsRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.joyChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #E2E8F0;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 20px;
+}
+
+/* 3D Digital Ticket Receipt Card */
+.ticketCard {
+  width: 100%;
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  position: relative;
+}
+
+.ticketTopBar {
+  background: linear-gradient(135deg, #0B1F3A 0%, #1769AA 100%);
+  color: #FFFFFF;
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ticketBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #38BDF8;
+}
+
+.aptIdTag {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.8);
+  font-family: monospace;
+}
+
+.tokenDisplayBox {
+  background: linear-gradient(180deg, #F8FAFC 0%, #EDF2F7 100%);
+  padding: 24px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.tokenTitle {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--color-text-secondary);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.tokenValueRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.ticketIcon {
+  color: var(--color-medical-blue);
+}
+
+.tokenNumber {
+  font-size: 42px;
+  font-weight: 900;
+  color: var(--color-medical-blue);
+  line-height: 1;
+  letter-spacing: 0.02em;
+}
+
+.tokenSubText {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+/* Dashed Cut Line */
+.ticketCutLine {
+  position: relative;
+  height: 20px;
+  background: #FFFFFF;
+  display: flex;
+  align-items: center;
+}
+
+.circleNotchLeft, .circleNotchRight {
+  width: 20px;
+  height: 20px;
+  background: var(--color-bg);
+  border-radius: 50%;
+  position: absolute;
+  top: 0;
+  z-index: 2;
+}
+
+.circleNotchLeft { left: -10px; border-right: 1px solid var(--color-border); }
+.circleNotchRight { right: -10px; border-left: 1px solid var(--color-border); }
+
+.dashedBorder {
+  width: 100%;
+  border-bottom: 2px dashed var(--color-border);
+}
+
+/* Details Grid */
+.detailsGrid {
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  text-align: left;
+}
+
+.detailItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.detailIcon {
+  color: var(--color-medical-blue);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.detailLabel {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.detailValue {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-primary);
+  line-height: 1.35;
+}
+
+/* QR Verification Box */
+.qrVerificationBox {
+  margin: 0 20px 16px 20px;
+  padding: 14px;
+  background: #F8FAFC;
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-align: left;
+}
+
+.qrCodeWrapper {
+  width: 90px;
+  height: 90px;
+  background: #FFFFFF;
+  padding: 4px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.qrCodeImg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.qrTextCol {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.qrHeader {
+  font-size: 13px;
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.qrSub {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  margin: 0;
+  line-height: 1.35;
+}
+
+.verifyLink {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-medical-blue);
+  text-decoration: none;
+  margin-top: 2px;
+}
+
+.verifyLink:hover {
+  text-decoration: underline;
+}
+
+/* Instruction Notice */
+.instructionNotice {
+  background: #FFFBEB;
+  border: 1px solid #FDE68A;
+  color: #92400E;
+  font-size: 12px;
+  line-height: 1.45;
+  padding: 12px 16px;
+  margin: 0 20px 20px 20px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.noticeIcon {
+  color: #D97706;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* Action Buttons Column */
+.actionButtonsCol {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.secondaryActionsRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.pdfBtn, .calendarBtn, .mapBtn, .printBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 44px;
+}
+
+.pdfBtn {
+  background: var(--color-medical-blue);
+  color: #FFFFFF;
+  border: none;
+  box-shadow: 0 4px 12px rgba(23, 105, 170, 0.25);
+}
+
+.pdfBtn:hover {
+  background: var(--color-primary);
+}
+
+.calendarBtn {
+  background: #ECFDF5;
+  color: #059669;
+  border: 1px solid #A7F3D0;
+}
+
+.calendarBtn:hover {
+  background: #10B981;
+  color: #FFFFFF;
+}
+
+.mapBtn {
+  background: var(--color-info-light);
+  color: var(--color-medical-blue);
+  border: 1px solid var(--color-medical-blue-light);
+}
+
+.mapBtn:hover {
+  background: var(--color-medical-blue);
+  color: #FFFFFF;
+}
+
+.printBtn {
+  background: var(--color-white);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+}
+
+.printBtn:hover {
+  background: var(--color-bg-alt);
+}
+
+.bookAnotherContainer {
+  margin-top: 4px;
+  width: 100%;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #printable-token, #printable-token * {
+    visibility: visible;
+  }
+  #printable-token {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+}

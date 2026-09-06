@@ -1,0 +1,322 @@
+.payment-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.payment-modal-card {
+  background: #FFFFFF;
+  border-radius: 24px;
+  padding: 24px;
+  width: 100%;
+  max-width: 450px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25);
+  border: 1px solid #E2E8F0;
+}
+
+/* Header */
+.payment-modal-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #F1F5F9;
+  position: relative;
+}
+
+.security-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: #0284C7;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.header-text {
+  flex: 1;
+}
+
+.header-text h3 {
+  font-size: 17px;
+  font-weight: 800;
+  color: #0F172A;
+  margin-bottom: 2px;
+  line-height: 1.2;
+}
+
+.header-text p {
+  font-size: 12px;
+  color: #64748B;
+  margin: 0;
+}
+
+.close-modal-btn {
+  background: #F1F5F9;
+  border: none;
+  color: #64748B;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.close-modal-btn:hover {
+  background: #E2E8F0;
+  color: #0F172A;
+}
+
+/* Consultation Fee Box */
+.payment-amount-box {
+  background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%);
+  border: 1px solid #BAE6FD;
+  border-radius: 16px;
+  padding: 16px;
+  text-align: center;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.amount-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #0284C7;
+  text-transform: uppercase;
+}
+
+.amount-value {
+  font-size: 32px;
+  font-weight: 800;
+  color: #0F172A;
+  line-height: 1.1;
+  margin: 4px 0;
+}
+
+.amount-detail {
+  font-size: 12px;
+  color: #475569;
+  font-weight: 500;
+}
+
+.payment-modal-error {
+  background: #FEE2E2;
+  color: #DC2626;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  border: 1px solid #FCA5A5;
+}
+
+.payment-modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* QR Box */
+.qr-box {
+  text-align: center;
+  padding: 16px;
+  background: #FFFFFF;
+  border: 1px solid #BAE6FD;
+  border-radius: 16px;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 4px 16px rgba(2, 132, 199, 0.06);
+}
+
+.modal-qr-image-wrapper {
+  width: 170px;
+  height: 170px;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 2px solid #0284C7;
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.15);
+  margin-bottom: 12px;
+  background: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+}
+
+.modal-payment-qr-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.qr-scan-text {
+  font-size: 12px;
+  color: #475569;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.official-payee-badge {
+  font-size: 12px;
+  color: #0284C7;
+  background: #E0F2FE;
+  padding: 4px 12px;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+/* 1-Tap Mobile UPI Button */
+.direct-upi-pay-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  color: #FFFFFF;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25);
+  transition: all 0.2s ease;
+}
+
+.direct-upi-pay-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35);
+  color: #FFFFFF;
+}
+
+/* UPI Copy Box */
+.modal-upi-copy-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 10px;
+  padding: 8px 12px;
+}
+
+.modal-upi-copy-box code {
+  font-family: monospace;
+  font-size: 14px;
+  font-weight: 700;
+  color: #0284C7;
+}
+
+.copy-upi-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #E0F2FE;
+  color: #0284C7;
+  border: 1px solid #BAE6FD;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.copy-upi-btn:hover {
+  background: #0284C7;
+  color: #FFFFFF;
+}
+
+.copied-icon {
+  color: #059669;
+}
+
+.modal-styled-input {
+  width: 100%;
+  padding: 12px 14px;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 10px;
+  font-size: 14px;
+  color: #0F172A;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.modal-styled-input:focus {
+  background: #FFFFFF;
+  border-color: #0284C7;
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #334155;
+}
+
+.payment-modal-actions {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+@media (max-width: 480px) {
+  .payment-modal-card {
+    padding: 16px;
+    border-radius: 20px;
+  }
+  
+  .payment-modal-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-qr-image-wrapper {
+    width: 150px;
+    height: 150px;
+  }
+}
+
+.payment-security-footer {
+  text-align: center;
+  font-size: 11px;
+  color: #94A3B8;
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}

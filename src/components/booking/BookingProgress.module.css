@@ -1,0 +1,106 @@
+.container {
+  padding: 16px;
+  background-color: var(--color-white);
+  border-bottom: 1px solid var(--color-border, #eee);
+}
+
+.mobileProgress {
+  display: block;
+}
+
+.progressBarBg {
+  height: 8px;
+  background-color: var(--color-bg, #f5f5f5);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.progressBarFill {
+  height: 100%;
+  background-color: var(--color-medical-blue);
+  transition: width 0.3s ease;
+}
+
+.currentStepLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-medical-blue);
+  text-align: center;
+}
+
+.desktopProgress {
+  display: none;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.stepItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  flex: 1;
+}
+
+.stepItem:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  width: 100%;
+  height: 2px;
+  background-color: var(--color-bg, #eee);
+  z-index: 1;
+}
+
+.stepItem.completed:not(:last-child)::after {
+  background-color: var(--color-accent, #4caf50);
+}
+
+.stepCircle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: var(--color-bg, #eee);
+  color: var(--color-text-secondary, #666);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  z-index: 2;
+}
+
+.stepName {
+  font-size: 12px;
+  color: var(--color-text-secondary, #666);
+  text-align: center;
+}
+
+.stepItem.completed .stepCircle {
+  background-color: var(--color-accent, #4caf50);
+  color: var(--color-white);
+}
+
+.stepItem.current .stepCircle {
+  background-color: var(--color-medical-blue);
+  color: var(--color-white);
+}
+
+.stepItem.current .stepName {
+  color: var(--color-medical-blue);
+  font-weight: 600;
+}
+
+@media (min-width: 768px) {
+  .mobileProgress {
+    display: none;
+  }
+  .desktopProgress {
+    display: flex;
+  }
+}

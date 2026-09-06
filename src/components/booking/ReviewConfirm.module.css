@@ -1,0 +1,92 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  gap: 16px;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.errorAlert {
+  background-color: rgba(244, 67, 54, 0.1);
+  color: #c62828;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  border: 1px solid rgba(244, 67, 54, 0.3);
+}
+
+.summaryCard {
+  display: flex;
+  flex-direction: column;
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 12px 0;
+}
+
+.rowContent {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.label {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.value {
+  font-size: 16px;
+  color: var(--color-text-primary);
+  font-weight: 600;
+}
+
+.subValue {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+}
+
+.editLink {
+  background: none;
+  border: none;
+  color: var(--color-medical-blue);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.editLink:hover {
+  background-color: rgba(33, 150, 243, 0.1);
+}
+
+.divider {
+  height: 1px;
+  background-color: var(--color-border);
+  margin: 0 -16px;
+}
+
+.disclaimer {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  text-align: center;
+  margin: 16px 0 0;
+}
+
+.footer {
+  margin-top: 8px;
+}

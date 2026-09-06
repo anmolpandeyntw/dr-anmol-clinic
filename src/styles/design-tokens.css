@@ -1,0 +1,113 @@
+/* ============================================================
+   Design Tokens — "Mature Medical Blue & Dark Navy"
+   Dr. Anmol Pandey — Nephrology & Renal Practice
+   ============================================================ */
+
+:root {
+  /* ---- Brand Colors ---- */
+  --color-primary: #0F172A;            /* Dark Navy */
+  --color-primary-light: #1E293B;
+  --color-medical-blue: #0284C7;       /* Primary Medical Blue */
+  --color-medical-blue-light: #38BDF8;
+  --color-medical-blue-dark: #0369A1;
+  --color-accent: #0369A1;
+  --color-accent-light: #0284C7;
+  --color-accent-dark: #075985;
+
+  /* ---- Neutral Colors ---- */
+  --color-bg: #F0F9FF;                /* Soft Ice-Blue */
+  --color-bg-alt: #F8FAFC;
+  --color-white: #FFFFFF;
+  --color-text-primary: #0F172A;      /* Dark Navy Text */
+  --color-text-secondary: #475569;    /* Muted Slate Text */
+  --color-text-muted: #94A3B8;
+  --color-border: #E2E8F0;
+  --color-border-light: #F1F5F9;
+
+  /* ---- Semantic Colors ---- */
+  --color-success: #059669;           /* Subtle Medical Emerald */
+  --color-success-light: #ECFDF5;
+  --color-warning: #D97706;
+  --color-warning-light: #FEF3C7;
+  --color-error: #DC2626;
+  --color-error-light: #FEE2E2;
+  --color-info: #0284C7;
+  --color-info-light: #E0F2FE;
+
+  /* ---- Shadows ---- */
+  --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.07), 0 2px 4px -2px rgba(15, 23, 42, 0.05);
+  --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.04);
+  --shadow-xl: 0 20px 25px -5px rgba(15, 23, 42, 0.1), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+  --shadow-card: 0 4px 16px rgba(15, 23, 42, 0.05);
+  --shadow-card-hover: 0 12px 28px rgba(2, 132, 199, 0.15);
+
+  /* ---- Border Radii ---- */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+
+  /* ---- Spacing (4px base) ---- */
+  --space-0: 0;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+
+  /* ---- Typography ---- */
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-size-xs: 0.75rem;     /* 12px */
+  --font-size-sm: 0.875rem;    /* 14px */
+  --font-size-base: 1rem;      /* 16px */
+  --font-size-lg: 1.125rem;    /* 18px */
+  --font-size-xl: 1.25rem;     /* 20px */
+  --font-size-2xl: 1.5rem;     /* 24px */
+  --font-size-3xl: 1.875rem;   /* 30px */
+  --font-size-4xl: 2.25rem;    /* 36px */
+  --font-size-5xl: 3rem;       /* 48px */
+
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+
+  --letter-spacing-tight: -0.025em;
+  --letter-spacing-normal: 0;
+  --letter-spacing-wide: 0.025em;
+
+  /* ---- Layout ---- */
+  --container-max: 1200px;
+  --container-narrow: 800px;
+  --header-height: 64px;
+  --mobile-nav-height: 64px;
+
+  /* ---- Transitions ---- */
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+  --transition-slow: 350ms ease;
+  --transition-spring: 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* ---- Z-index scale ---- */
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-fixed: 300;
+  --z-modal-backdrop: 400;
+  --z-modal: 500;
+  --z-toast: 600;
+}

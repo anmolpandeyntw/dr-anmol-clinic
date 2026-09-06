@@ -1,0 +1,244 @@
+.footer {
+  background: #0F172A;
+  color: #94A3B8;
+  padding: var(--space-12, 3rem) 0 var(--space-6, 1.5rem);
+  border-top: 1px solid #1E293B;
+  font-size: 14px;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--space-6, 1.5rem);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 1.3fr 1.4fr;
+  gap: var(--space-6, 1.5rem);
+  margin-bottom: var(--space-10, 2.5rem);
+}
+
+@media (max-width: 1024px) {
+  .grid {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-8, 2rem);
+  }
+}
+
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-6, 1.5rem);
+  }
+}
+
+.brandTitle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #FFFFFF;
+  margin-bottom: 6px;
+}
+
+.brandTitle h3 {
+  font-size: 20px;
+  font-weight: 800;
+  color: #FFFFFF;
+}
+
+.brandIcon {
+  color: #38BDF8;
+}
+
+.subtitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: #38BDF8;
+  margin-bottom: 12px;
+}
+
+.tagline {
+  font-size: 13px;
+  color: #94A3B8;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.mciSeal {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(56, 189, 248, 0.1);
+  color: #38BDF8;
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.heading {
+  font-size: 15px;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin-bottom: var(--space-4, 1rem);
+  letter-spacing: -0.01em;
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.link {
+  color: #CBD5E1;
+  text-decoration: none;
+  font-size: 13px;
+  transition: color 0.2s ease;
+}
+
+.link:hover {
+  color: #38BDF8;
+}
+
+/* Contact Info Layout Fix */
+.contactInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.contactItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.contactIcon {
+  color: #38BDF8;
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+
+.contactContent {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.contactLabel {
+  font-size: 11px;
+  font-weight: 700;
+  color: #94A3B8;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.contactValue {
+  color: #38BDF8;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 14px;
+  word-break: break-word;
+  transition: color 0.2s ease;
+}
+
+.contactValue:hover {
+  color: #7DD3FC;
+  text-decoration: underline;
+}
+
+.contactValueText {
+  color: #E2E8F0;
+  font-size: 13px;
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+/* Visual Award Badges in Footer */
+.awardsBadgeContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.awardBadgeCard {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 6px 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.2s ease;
+}
+
+.awardBadgeCard:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(56, 189, 248, 0.3);
+}
+
+.badgeImgWrapper {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.badgeImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.badgeGold {
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+.badgeBlue {
+  border-color: rgba(56, 189, 248, 0.3);
+}
+
+.badgeGreen {
+  border-color: rgba(52, 211, 153, 0.3);
+}
+
+.badgeTag {
+  display: block;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: #94A3B8;
+  text-transform: uppercase;
+}
+
+.badgeTitle {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.bottomBar {
+  border-top: 1px solid #1E293B;
+  padding-top: var(--space-6, 1.5rem);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.copyright {
+  font-size: 12px;
+  color: #64748B;
+}
+
+.disclaimer {
+  font-size: 11px;
+  color: #475569;
+  line-height: 1.5;
+}

@@ -1,0 +1,270 @@
+.research-page {
+  background: #F8FAFC;
+  min-height: 100vh;
+  padding-bottom: var(--space-16);
+}
+
+.research-hero {
+  background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+  color: #FFFFFF;
+  padding: var(--space-12) 0;
+  text-align: center;
+}
+
+.research-pill-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(56, 189, 248, 0.15);
+  color: #38BDF8;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: var(--space-4);
+}
+
+.research-hero h1 {
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  font-weight: 800;
+  color: #FFFFFF;
+  margin-bottom: var(--space-3);
+}
+
+.research-hero p {
+  font-size: var(--font-size-md);
+  color: #94A3B8;
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.research-content {
+  margin-top: var(--space-8);
+}
+
+.verification-summary-box {
+  background: #FFFFFF;
+  border: 1px solid #BAE6FD;
+  border-radius: 16px;
+  padding: var(--space-6);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-6);
+  margin-bottom: var(--space-10);
+  box-shadow: 0 4px 16px rgba(2, 132, 199, 0.08);
+}
+
+.v-box-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.v-shield-icon {
+  color: #0284C7;
+  flex-shrink: 0;
+}
+
+.v-box-left h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0F172A;
+  margin-bottom: 4px;
+}
+
+.v-box-left p {
+  font-size: 13px;
+  color: #64748B;
+}
+
+.v-badge {
+  background: #F0F9FF;
+  color: #0284C7;
+  border: 1px solid #BAE6FD;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.research-section {
+  margin-bottom: var(--space-12);
+}
+
+.section-header-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+.s-icon-box {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #E0F2FE;
+  color: #0284C7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.s-icon-box--gold {
+  background: #FEF3C7;
+  color: #D97706;
+}
+
+.section-header-row h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #0F172A;
+  margin-bottom: 2px;
+}
+
+.section-header-row p {
+  font-size: 13px;
+  color: #64748B;
+}
+
+.papers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: var(--space-6);
+}
+
+.paper-card {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 16px;
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.paper-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-3);
+}
+
+.paper-cat-tag {
+  background: #F1F5F9;
+  color: #0F172A;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.paper-year-tag {
+  font-size: 12px;
+  font-weight: 700;
+  color: #0284C7;
+}
+
+.paper-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0F172A;
+  line-height: 1.35;
+  margin-bottom: 8px;
+}
+
+.paper-journal {
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748B;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.paper-abstract {
+  font-size: 13px;
+  color: #475569;
+  line-height: 1.5;
+  margin-bottom: var(--space-6);
+}
+
+.paper-bottom-actions {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: var(--space-4);
+  border-top: 1px solid #F1F5F9;
+}
+
+.doi-text {
+  font-size: 11px;
+  color: #94A3B8;
+  font-family: monospace;
+}
+
+.awards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--space-6);
+}
+
+.award-card {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 16px;
+  padding: var(--space-6);
+}
+
+.award-icon-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+
+.award-icon {
+  color: #D97706;
+}
+
+.award-year {
+  background: #FEF3C7;
+  color: #92400E;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.award-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #0F172A;
+  margin-bottom: 4px;
+}
+
+.award-body {
+  font-size: 13px;
+  font-weight: 600;
+  color: #0284C7;
+  margin-bottom: 8px;
+}
+
+.award-desc {
+  font-size: 13px;
+  color: #64748B;
+  line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+  .verification-summary-box {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

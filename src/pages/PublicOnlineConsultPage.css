@@ -1,0 +1,80 @@
+.public-online-consult-page {
+  padding: var(--space-8) var(--space-4);
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.consult-hero-banner {
+  text-align: center;
+  margin-bottom: var(--space-8);
+}
+
+.banner-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, var(--color-medical-blue), var(--color-accent));
+  color: var(--color-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto var(--space-4);
+}
+
+.consult-hero-banner h1 {
+  font-size: var(--font-size-2xl);
+  color: var(--color-primary);
+  margin-bottom: var(--space-2);
+}
+
+.consult-hero-banner p {
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+}
+
+.consult-error-box {
+  background: var(--color-error-light);
+  color: var(--color-error);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-6);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.consult-request-card {
+  padding: var(--space-8);
+}
+
+.consult-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.input-with-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.field-icon {
+  position: absolute;
+  left: var(--space-3);
+  color: var(--color-text-muted);
+}
+
+.input-with-icon input {
+  padding-left: var(--space-10);
+}
+
+.privacy-note {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+}

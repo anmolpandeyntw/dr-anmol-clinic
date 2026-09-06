@@ -1,0 +1,168 @@
+.admin-clinics-page {
+  padding: var(--space-8);
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.admin-clinics-page__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-8);
+}
+
+.admin-clinics-page__header h1 {
+  font-size: var(--font-size-2xl);
+  color: var(--color-primary);
+  margin-bottom: 2px;
+}
+
+.admin-clinics-page__actions {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.admin-clinics-section {
+  margin-bottom: var(--space-10);
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.section-title h2 {
+  font-size: var(--font-size-lg);
+  color: var(--color-primary);
+}
+
+.icon-private { color: var(--color-accent); }
+.icon-hospital { color: var(--color-medical-blue); }
+
+.admin-clinics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: var(--space-6);
+}
+
+.admin-clinic-card {
+  padding: var(--space-6);
+  border-top: 4px solid var(--color-accent);
+}
+
+.admin-clinic-card--hospital {
+  border-top: 4px solid var(--color-medical-blue);
+}
+
+.admin-clinic-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-3);
+}
+
+.status-pill {
+  font-size: 10px;
+  font-weight: var(--font-weight-bold);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  margin-right: var(--space-2);
+}
+
+.status-pill--active { background: var(--color-success-light); color: var(--color-success); }
+.status-pill--inactive { background: var(--color-error-light); color: var(--color-error); }
+
+.booking-pill {
+  font-size: 10px;
+  font-weight: var(--font-weight-bold);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+}
+
+.booking-pill--on { background: rgba(24, 166, 166, 0.2); color: var(--color-accent-dark); }
+.booking-pill--off { background: #e2e8f0; color: #475569; }
+
+.admin-clinic-card h3 {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  margin-bottom: var(--space-3);
+}
+
+.admin-clinic-card__info p {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-2);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.link-maps {
+  color: var(--color-medical-blue);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  padding: var(--space-4);
+}
+
+.modal-card {
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  padding: var(--space-8);
+  width: 100%;
+  max-width: 620px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-xl);
+}
+
+.modal-card h2 {
+  font-size: var(--font-size-xl);
+  color: var(--color-primary);
+  margin-bottom: var(--space-6);
+}
+
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+
+.field-subnote {
+  font-size: 11px;
+  color: #64748B;
+  margin-top: 3px;
+  display: block;
+}
+
+.checkbox-group label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  cursor: pointer;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}

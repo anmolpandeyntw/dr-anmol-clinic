@@ -1,0 +1,102 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2, 0.5rem);
+  border-radius: var(--radius-md, 8px);
+  font-weight: var(--font-weight-medium, 500);
+  transition: all var(--transition-normal, 0.2s ease);
+  cursor: pointer;
+  border: 1px solid transparent;
+  text-decoration: none;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.button[disabled],
+.button[aria-disabled="true"] {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Sizes */
+.size-sm {
+  height: 36px;
+  padding: 0 var(--space-3, 0.75rem);
+  font-size: var(--font-size-sm, 0.875rem);
+}
+
+.size-md {
+  height: 44px;
+  padding: 0 var(--space-4, 1rem);
+  font-size: var(--font-size-base, 1rem);
+}
+
+.size-lg {
+  height: 52px;
+  padding: 0 var(--space-6, 1.5rem);
+  font-size: var(--font-size-lg, 1.125rem);
+}
+
+/* Variants */
+.variant-primary {
+  background-color: var(--color-medical-blue, #0056b3);
+  color: var(--color-white, #fff);
+}
+
+.variant-primary:hover:not([disabled]) {
+  background-color: var(--color-primary, #004085);
+}
+
+.variant-secondary {
+  background-color: var(--color-accent, #00bfa5);
+  color: var(--color-white, #fff);
+}
+
+.variant-secondary:hover:not([disabled]) {
+  filter: brightness(0.9);
+}
+
+.variant-outline {
+  border-color: var(--color-medical-blue, #0056b3);
+  color: var(--color-medical-blue, #0056b3);
+  background-color: transparent;
+}
+
+.variant-outline:hover:not([disabled]) {
+  background-color: var(--color-medical-blue, #0056b3);
+  color: var(--color-white, #fff);
+}
+
+.variant-ghost {
+  color: var(--color-medical-blue, #0056b3);
+  background-color: transparent;
+}
+
+.variant-ghost:hover:not([disabled]) {
+  background-color: rgba(0, 86, 179, 0.05);
+}
+
+.fullWidth {
+  width: 100%;
+}
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Spinner for loading state */
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid currentColor;
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

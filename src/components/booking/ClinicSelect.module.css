@@ -1,0 +1,178 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  gap: 20px;
+  max-width: 720px;
+  margin: 0 auto;
+  background: var(--color-white);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border);
+}
+
+.headerGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.clinicList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.clinicCardWrapper {
+  width: 100%;
+}
+
+.clinicCard {
+  cursor: pointer;
+  transition: all 0.25s ease !important;
+  border: 2px solid var(--color-border) !important;
+  padding: 20px !important;
+  border-radius: var(--radius-xl) !important;
+  background: var(--color-white) !important;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.clinicCard:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-card-hover) !important;
+  border-color: var(--color-medical-blue-light) !important;
+}
+
+.clinicCard.selected {
+  border-color: var(--color-medical-blue) !important;
+  background-color: var(--color-info-light) !important;
+  box-shadow: 0 4px 16px rgba(23, 105, 170, 0.15) !important;
+}
+
+.opdCard {
+  background: var(--color-bg) !important;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.clinicNameGroup {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.iconCircle {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.iconCirclePrivate {
+  background: var(--color-info-light);
+  color: var(--color-medical-blue);
+}
+
+.iconCircleOpd {
+  background: #F1F5F9;
+  color: #475569;
+}
+
+.badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 4px;
+  letter-spacing: 0.03em;
+}
+
+.badgePrivate {
+  background: var(--color-info-light);
+  color: var(--color-medical-blue);
+}
+
+.badgeOpd {
+  background: #E2E8F0;
+  color: #475569;
+}
+
+.clinicName {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.checkIcon {
+  color: var(--color-medical-blue);
+  flex-shrink: 0;
+}
+
+.clinicDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  background: var(--color-bg);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.detailRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.detailIcon {
+  margin-top: 2px;
+  color: var(--color-medical-blue);
+  flex-shrink: 0;
+}
+
+.feeText {
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+/* Inline Instant Action Area */
+.inlineActionArea {
+  margin-top: 4px;
+  width: 100%;
+}
+
+.telLink {
+  text-decoration: none;
+  width: 100%;
+  display: block;
+}

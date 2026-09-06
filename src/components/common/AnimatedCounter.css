@@ -1,0 +1,5 @@
+.animated-counter {
+  display: inline-block;
+  font-variant-numeric: tabular-nums;
+  transition: color 0.3s ease;
+}

@@ -1,0 +1,125 @@
+.current-token-card {
+  border-left: 6px solid var(--color-accent);
+  background: linear-gradient(135deg, #ffffff 0%, #f0fdfa 100%);
+  padding: var(--space-6);
+}
+
+.current-token-card--empty {
+  border-left: 6px solid var(--color-border);
+  background: var(--color-white);
+  text-align: center;
+  padding: var(--space-8);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.current-token-card__empty-icon {
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-4);
+}
+
+.current-token-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+
+.current-token-card__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: rgba(24, 166, 166, 0.15);
+  color: var(--color-accent-dark);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-xs);
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+}
+
+.current-token-card__time {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.current-token-card__body {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  margin-bottom: var(--space-6);
+}
+
+@media (max-width: 640px) {
+  .current-token-card__body {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.current-token-card__token-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-primary);
+  color: var(--color-white);
+  padding: var(--space-4) var(--space-6);
+  border-radius: var(--radius-md);
+  min-width: 120px;
+}
+
+.current-token-card__label {
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.current-token-card__number {
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-accent-light);
+  line-height: 1;
+}
+
+.current-token-card__patient-info {
+  flex: 1;
+}
+
+.current-token-card__patient-name {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  margin-bottom: var(--space-2);
+}
+
+.current-token-card__details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.current-token-card__details span {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.current-token-card__details a {
+  color: var(--color-medical-blue);
+  font-weight: var(--font-weight-medium);
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.4; }
+  100% { opacity: 1; }
+}
+
+.pulse-icon {
+  animation: pulse 1.5s infinite ease-in-out;
+}

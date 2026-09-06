@@ -1,0 +1,91 @@
+.admin-header {
+  height: 60px;
+  background: #FFFFFF;
+  border-bottom: 1px solid #E2E8F0;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.admin-header__clinic-selector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  padding: 6px 12px;
+  border-radius: 10px;
+  max-width: 380px;
+  flex: 1;
+}
+
+.admin-header__icon {
+  color: #0284C7;
+  flex-shrink: 0;
+}
+
+.admin-header__select {
+  border: none;
+  background: transparent;
+  font-weight: 600;
+  color: #0F172A;
+  font-size: 13px;
+  outline: none;
+  cursor: pointer;
+  width: 100%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.admin-header__user-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.admin-header__user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-text-wrapper {
+  max-width: 160px;
+  overflow: hidden;
+}
+
+.admin-header__avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #0284C7;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.admin-header__user-name {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: #0F172A;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.admin-header__user-role {
+  display: block;
+  font-size: 10px;
+  color: #64748B;
+  font-weight: 600;
+}

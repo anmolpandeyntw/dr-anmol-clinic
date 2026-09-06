@@ -1,0 +1,136 @@
+.specializations-section {
+  padding: var(--space-16) 0;
+  background-color: var(--color-bg);
+}
+
+.specializations-header {
+  text-align: center;
+  margin-bottom: var(--space-10);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.section-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: var(--color-info-light);
+  color: var(--color-medical-blue);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  margin-bottom: var(--space-3);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.specializations-header .section-title {
+  font-size: var(--font-size-3xl);
+  color: var(--color-primary);
+  margin-bottom: var(--space-2);
+}
+
+.specializations-header .section-subtitle {
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  max-width: 600px;
+}
+
+.specializations-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--space-5);
+  width: 100%;
+}
+
+.specialization-card {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+}
+
+.specialization-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--color-medical-blue);
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.specialization-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-card-hover);
+  border-color: var(--color-medical-blue-light);
+}
+
+.specialization-card:hover::before {
+  opacity: 1;
+}
+
+.spec-icon-wrapper {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--color-info-light) 0%, #e0f2fe 100%);
+  color: var(--color-medical-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all var(--transition-fast);
+}
+
+.specialization-card:hover .spec-icon-wrapper {
+  background: linear-gradient(135deg, var(--color-medical-blue) 0%, var(--color-accent) 100%);
+  color: var(--color-white);
+}
+
+.spec-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.spec-name {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  margin-bottom: var(--space-1);
+  line-height: 1.35;
+}
+
+.spec-desc {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+}
+
+.spec-tag {
+  font-size: 11px;
+  color: var(--color-accent-dark);
+  font-weight: var(--font-weight-medium);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+@media (max-width: 640px) {
+  .specializations-grid {
+    grid-template-columns: 1fr;
+  }
+}

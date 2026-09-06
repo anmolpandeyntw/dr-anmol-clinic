@@ -1,0 +1,226 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  gap: 24px;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.methodsList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.methodCard {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.2s;
+  min-height: 80px;
+}
+
+.methodCard:hover:not(.disabled) {
+  border-color: rgba(33, 150, 243, 0.3);
+}
+
+.methodCard.selected {
+  border-color: var(--color-medical-blue);
+  background-color: rgba(33, 150, 243, 0.05);
+}
+
+.methodCard.disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.methodContent {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+}
+
+.iconWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: var(--color-bg);
+}
+
+.icon {
+  color: var(--color-text-secondary);
+}
+
+.iconSelected {
+  color: var(--color-medical-blue);
+}
+
+.iconDisabled {
+  color: var(--color-text-secondary);
+}
+
+.methodInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.methodTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.methodDesc {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.comingSoon {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  background-color: var(--color-accent);
+  color: var(--color-white);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.radioCircle {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 16px;
+}
+
+.selected .radioCircle {
+  border-color: var(--color-medical-blue);
+}
+
+.radioInner {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: var(--color-medical-blue);
+}
+
+.footer {
+  margin-top: 16px;
+}
+
+.onlinePaymentPanel {
+  background: #F0F9FF;
+  border: 1px solid #BAE6FD;
+  border-radius: 14px;
+  padding: 16px;
+  margin-top: -8px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.panelHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #0284C7;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #E0F2FE;
+}
+
+.payeeLabel {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #64748B;
+  display: block;
+}
+
+.payeeName {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0F172A;
+  margin: 0;
+}
+
+.qrRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.qrImageBox {
+  width: 100px;
+  height: 100px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 2px solid #FFFFFF;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  flex-shrink: 0;
+  background: #FFFFFF;
+}
+
+.qrImageBox img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.upiDetailsBox {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.upiLabel {
+  font-size: 11px;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+}
+
+.upiIdBadge {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0284C7;
+  background: #FFFFFF;
+  border: 1px solid #BAE6FD;
+  padding: 4px 10px;
+  border-radius: 6px;
+  display: inline-block;
+  font-family: monospace;
+}
+
+.verificationNote {
+  font-size: 11px;
+  color: #64748B;
+  margin-top: 6px;
+  line-height: 1.4;
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+}

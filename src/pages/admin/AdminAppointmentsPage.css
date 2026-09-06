@@ -1,0 +1,80 @@
+.admin-appointments-page {
+  padding: var(--space-8);
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.admin-appointments-page__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-6);
+}
+
+@media (max-width: 767px) {
+  .admin-appointments-page__header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-4);
+  }
+}
+
+.admin-appointments-page__header h1 {
+  font-size: var(--font-size-2xl);
+  color: var(--color-primary);
+  margin-bottom: 2px;
+}
+
+.admin-appointments-page__header p {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.admin-appointments-page__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.filter-select-wrapper,
+.date-picker-wrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.filter-icon,
+.date-icon {
+  color: var(--color-medical-blue);
+  flex-shrink: 0;
+}
+
+.clinic-filter-select,
+.date-mode-select,
+.date-picker-wrapper input {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  cursor: pointer;
+}
+
+.admin-appointments-page__error {
+  background: var(--color-error-light);
+  color: var(--color-error);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-6);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-sm);
+}

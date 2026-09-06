@@ -1,0 +1,94 @@
+.next-patient-card {
+  padding: var(--space-6);
+  border-left: 4px solid var(--color-medical-blue);
+}
+
+.next-patient-card--empty {
+  border-left: 4px solid var(--color-border);
+  text-align: center;
+  padding: var(--space-6);
+  color: var(--color-text-muted);
+}
+
+.next-patient-card__empty-icon {
+  margin-bottom: var(--space-2);
+}
+
+.next-patient-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+
+.next-patient-card__label {
+  font-size: 10px;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+}
+
+.badge--arrived {
+  background: var(--color-success-light);
+  color: var(--color-success);
+  font-size: 11px;
+  font-weight: var(--font-weight-semibold);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.badge--confirmed {
+  background: var(--color-info-light);
+  color: var(--color-info);
+  font-size: 11px;
+  font-weight: var(--font-weight-semibold);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+}
+
+.next-patient-card__body {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.next-patient-card__token {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  background: var(--color-bg-alt);
+  color: var(--color-primary);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.next-patient-card__info {
+  flex: 1;
+}
+
+.next-patient-card__name {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  margin-bottom: 2px;
+}
+
+.next-patient-card__meta {
+  display: flex;
+  gap: var(--space-3);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+
+.next-patient-card__meta span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}

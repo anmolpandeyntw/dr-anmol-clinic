@@ -1,0 +1,282 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  gap: 16px;
+  width: 100%;
+  max-width: 580px;
+  margin: 0 auto;
+  background: var(--color-white);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border);
+}
+
+.headerTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+}
+
+.titleIcon {
+  color: var(--color-medical-blue);
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin: 0;
+}
+
+.calendar {
+  background: var(--color-bg);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  width: 100%;
+  border: 1px solid var(--color-border);
+  box-sizing: border-box;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.navButton {
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  cursor: pointer;
+  padding: 6px;
+  color: var(--color-primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  transition: all 0.2s ease;
+}
+
+.navButton:hover {
+  border-color: var(--color-medical-blue);
+  color: var(--color-medical-blue);
+}
+
+.monthYear {
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--color-primary);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  text-align: center;
+}
+
+.dayOfWeek {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.emptyDay {
+  height: 42px;
+}
+
+.day {
+  height: 42px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  user-select: none;
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  position: relative;
+}
+
+.day:not(.disabled):hover {
+  border-color: var(--color-medical-blue);
+  background: var(--color-info-light);
+  color: var(--color-medical-blue);
+}
+
+.day.today {
+  border: 2px solid var(--color-medical-blue);
+}
+
+.day.selected {
+  background: var(--color-medical-blue) !important;
+  color: var(--color-white) !important;
+  border-color: var(--color-medical-blue) !important;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(23, 105, 170, 0.3);
+}
+
+.day.disabled {
+  color: var(--color-text-muted);
+  background: rgba(241, 245, 249, 0.6);
+  border-color: transparent;
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.day.blocked {
+  color: var(--color-error) !important;
+  background: #FEE2E2 !important;
+  border-color: #FCA5A5 !important;
+  text-decoration: line-through;
+}
+
+.blockedDot {
+  width: 5px;
+  height: 5px;
+  background-color: var(--color-error);
+  border-radius: 50%;
+  position: absolute;
+  bottom: 4px;
+}
+
+/* Legend Row */
+.legendRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--color-border);
+}
+
+.legendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.legendDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.legendDotAvailable {
+  background: var(--color-medical-blue);
+}
+
+.legendDotBlocked {
+  background: var(--color-error);
+}
+
+.legendDotNoSchedule {
+  background: #CBD5E1;
+}
+
+/* Availability Detail Card */
+.availabilityDetailCard {
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
+  box-shadow: var(--shadow-xs);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.detailHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.detailDateText {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.statusPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+}
+
+.statusPillAvailable {
+  background: #DCFCE7;
+  color: #16A34A;
+}
+
+.statusPillBlocked {
+  background: #FEE2E2;
+  color: #DC2626;
+}
+
+.statusPillOff {
+  background: #F1F5F9;
+  color: #64748B;
+}
+
+.detailBody {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  line-height: 1.45;
+}
+
+.leaveNotice, .scheduleNotice, .offNotice {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+}
+
+.leaveNotice {
+  background: #FEF2F2;
+  border: 1px solid #FECACA;
+  color: #991B1B;
+}
+
+.scheduleNotice {
+  background: #F0F9FF;
+  border: 1px solid #BAE6FD;
+  color: #0369A1;
+}
+
+.offNotice {
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  color: #475569;
+}
+
+.noticeIcon {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.footer {
+  margin-top: 4px;
+  width: 100%;
+}

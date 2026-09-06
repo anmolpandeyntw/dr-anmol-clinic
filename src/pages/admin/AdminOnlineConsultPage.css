@@ -1,0 +1,130 @@
+.admin-consult-page {
+  padding: var(--space-8);
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.admin-consult-page__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-8);
+}
+
+.admin-consult-page__header h1 {
+  font-size: var(--font-size-2xl);
+  color: var(--color-primary);
+  margin-bottom: 2px;
+}
+
+.admin-consult-page__error {
+  background: var(--color-error-light);
+  color: var(--color-error);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-6);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.consult-requests-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: var(--space-6);
+}
+
+.consult-req-card {
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.req-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-3);
+}
+
+.status-badge {
+  font-size: 10px;
+  font-weight: var(--font-weight-bold);
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  text-transform: uppercase;
+}
+
+.status-badge--pending_approval { background: #fef3c7; color: #d97706; }
+.status-badge--approved { background: var(--color-success-light); color: var(--color-success); }
+.status-badge--rejected { background: var(--color-error-light); color: var(--color-error); }
+
+.req-date {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.patient-title {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  margin-bottom: 2px;
+}
+
+.patient-meta {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-3);
+}
+
+.reason-box {
+  background: var(--color-bg);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-3);
+}
+
+.reason-box strong { display: block; margin-bottom: 2px; color: var(--color-primary); }
+
+.link-box {
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-xs);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.link-box a {
+  color: var(--color-medical-blue);
+  word-break: break-all;
+  font-weight: var(--font-weight-semibold);
+}
+
+.req-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border);
+  margin-top: var(--space-3);
+}
+
+.approved-text {
+  font-size: var(--font-size-xs);
+  color: var(--color-success);
+  font-weight: var(--font-weight-bold);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
