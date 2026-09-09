@@ -54,11 +54,10 @@ export function useDoctor() {
         if (err) setError(err.message);
       } else {
         const docFromDb = data[0] as Doctor;
-        // Priority: localOverride > docFromDb > defaultBase
+        // Global Single Source of Truth: Database data takes priority over local browser storage
         setDoctor({
           ...defaultBase,
-          ...docFromDb,
-          ...localOverride
+          ...docFromDb
         });
       }
     } catch (e) {
