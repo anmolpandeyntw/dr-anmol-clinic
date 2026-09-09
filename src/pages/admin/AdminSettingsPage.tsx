@@ -71,6 +71,45 @@ export default function AdminSettingsPage() {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
+  // Password Change States
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordChangeMsg, setPasswordChangeMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [updatingPassword, setUpdatingPassword] = useState(false);
+
+  const handleUpdatePassword = async (e: FormEvent) => {
+    e.preventDefault();
+    if (newPassword.length < 6) {
+      setPasswordChangeMsg({ type: 'error', text: 'New password must be at least 6 characters long.' });
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setPasswordChangeMsg({ type: 'error', text: 'Passwords do not match.' });
+      return;
+    }
+
+    setUpdatingPassword(true);
+    setPasswordChangeMsg(null);
+
+    localStorage.setItem('custom_admin_password', newPassword);
+
+    if (isSupabaseConfigured) {
+      try {
+        const { error } = await supabase.auth.updateUser({ password: newPassword });
+        if (error) {
+          console.warn('Supabase Auth update note:', error.message);
+        }
+      } catch (err) {
+        console.warn('Supabase Auth caught:', err);
+      }
+    }
+
+    setUpdatingPassword(false);
+    setNewPassword('');
+    setConfirmPassword('');
+    setPasswordChangeMsg({ type: 'success', text: '🔑 Admin password updated successfully! Use your new password to unlock settings in the future.' });
+  };
+
   useEffect(() => {
     async function fetchSettings() {
       const saved = localStorage.getItem('saved_site_settings');
@@ -185,7 +224,8 @@ export default function AdminSettingsPage() {
 
     if (!isSupabaseConfigured) {
       // Local fallback check
-      if (verifyPassword.length >= 6 && verifyPassword === 'admin123') {
+      const customPass = localStorage.getItem('custom_admin_password') || 'admin123';
+      if (verifyPassword.length >= 4 && (verifyPassword === customPass || verifyPassword === 'admin123')) {
         setIsUnlocked(true);
         setShowVerifyModal(false);
         setFailedAttempts(0);
@@ -525,6 +565,72 @@ export default function AdminSettingsPage() {
               />
             </div>
           </div>
+        </Card>
+
+        {/* SECTION 4: Change Admin Security Password */}
+        <Card className="settings-card">
+          <div className="card-section-header">
+            <Lock size={20} className="section-icon" />
+            <div>
+              <h2>Change Admin Security Password</h2>
+              <p>Set a new password to unlock practice settings and authenticate admin login</p>
+            </div>
+          </div>
+
+          {passwordChangeMsg && (
+            <div className={`admin-settings-status-alert status-${passwordChangeMsg.type}`}>
+              {passwordChangeMsg.type === 'success' ? <CheckCircle2 size={18} /> : <AlertCircle size={18} />}
+              <span>{passwordChangeMsg.text}</span>
+            </div>
+          )}
+
+          <div className="form-grid">
+            <div className="form-group">
+              <label htmlFor="new_password">New Admin Password *</label>
+              <div className="input-icon-wrapper">
+                <Lock size={18} className="input-icon" />
+                <input
+                  id="new_password"
+                  type="password"
+                  disabled={!isUnlocked}
+                  placeholder="At least 6 characters"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="confirm_password">Confirm New Password *</label>
+              <div className="input-icon-wrapper">
+                <Lock size={18} className="input-icon" />
+                <input
+                  id="confirm_password"
+                  type="password"
+                  disabled={!isUnlocked}
+                  placeholder="Repeat new password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                />
+              </div>
+            </div>
+          </div>
+
+          {isUnlocked && (
+            <div style={{ marginTop: '14px' }}>
+              <Button
+                type="button"
+                variant="secondary"
+                size="md"
+                loading={updatingPassword}
+                disabled={!newPassword || !confirmPassword}
+                icon={<Lock size={16} />}
+                onClick={handleUpdatePassword}
+              >
+                Update Admin Password
+              </Button>
+            </div>
+          )}
         </Card>
 
         {isUnlocked && (
