@@ -9,7 +9,6 @@ import { ShieldCheck, Lock, Mail, User, AlertCircle, CheckCircle2, UserPlus, Log
 import './AdminLoginPage.css';
 
 const MAX_LOGIN_ATTEMPTS = 5;
-const LOGIN_LOCKOUT_MS = 15 * 60 * 1000; // 15 minutes lockout
 
 export default function AdminLoginPage() {
   const [mode, setMode] = useState<'login' | 'register'>('login');
@@ -98,19 +97,27 @@ export default function AdminLoginPage() {
         localStorage.setItem('admin_login_failed_count', nextCount.toString());
 
         if (nextCount >= MAX_LOGIN_ATTEMPTS) {
-          const lockTime = Date.now() + LOGIN_LOCKOUT_MS;
+          const currentLevel = parseInt(localStorage.getItem('admin_login_lockout_level') || '0', 10) + 1;
+          localStorage.setItem('admin_login_lockout_level', currentLevel.toString());
+
+          let lockMinutes = 2; // Level 1: 2 minutes
+          if (currentLevel === 2) lockMinutes = 3; // Level 2: 3 minutes
+          else if (currentLevel >= 3) lockMinutes = 5; // Level 3+: 5 minutes
+
+          const lockTime = Date.now() + (lockMinutes * 60 * 1000);
           setLoginLockoutUntil(lockTime);
           localStorage.setItem('admin_login_lockout_until', lockTime.toString());
-          setAuthError(`⛔ Security Lockout Triggered (${nextCount}/${MAX_LOGIN_ATTEMPTS} Failed Attempts): Sign-in locked for 15 minutes for security protection.`);
+          setAuthError(`⛔ Security Lockout: Maximum failed login attempts (${nextCount}/${MAX_LOGIN_ATTEMPTS}). Sign-in locked for ${lockMinutes} minute(s).`);
         } else {
           const remaining = MAX_LOGIN_ATTEMPTS - nextCount;
-          setAuthError(`Authorization failed: ${error} (${nextCount}/${MAX_LOGIN_ATTEMPTS} attempts used — ${remaining} remaining before 15-min lockout).`);
+          setAuthError(`Authorization failed: ${error} (${nextCount}/${MAX_LOGIN_ATTEMPTS} attempts used — ${remaining} remaining before lockout).`);
         }
       } else {
         setFailedLoginAttempts(0);
         setLoginLockoutUntil(null);
         localStorage.removeItem('admin_login_failed_count');
         localStorage.removeItem('admin_login_lockout_until');
+        localStorage.removeItem('admin_login_lockout_level');
         navigate(from, { replace: true });
       }
     }

@@ -24,7 +24,6 @@ interface ExtendedSiteSettings {
 }
 
 const MAX_REAUTH_ATTEMPTS = 5;
-const REAUTH_LOCKOUT_MS = 15 * 60 * 1000; // 15 minutes lockout
 
 export default function AdminSettingsPage() {
   const { user } = useAuth();
@@ -205,20 +204,27 @@ export default function AdminSettingsPage() {
 
     const userEmail = user?.email || settings.main_email || 'anmolpandeyntw@gmail.com';
 
-    // Helper for failed attempt tracking
+    // Helper for failed attempt tracking with progressive lockout (2m -> 3m -> 5m)
     const registerFailedAttempt = () => {
       const nextCount = failedAttempts + 1;
       setFailedAttempts(nextCount);
       localStorage.setItem('admin_reauth_failed_count', nextCount.toString());
 
       if (nextCount >= MAX_REAUTH_ATTEMPTS) {
-        const lockUntil = Date.now() + REAUTH_LOCKOUT_MS;
+        const currentLevel = parseInt(localStorage.getItem('admin_reauth_lockout_level') || '0', 10) + 1;
+        localStorage.setItem('admin_reauth_lockout_level', currentLevel.toString());
+
+        let lockMinutes = 2; // Level 1: 2 minutes
+        if (currentLevel === 2) lockMinutes = 3; // Level 2: 3 minutes
+        else if (currentLevel >= 3) lockMinutes = 5; // Level 3+: 5 minutes
+
+        const lockUntil = Date.now() + (lockMinutes * 60 * 1000);
         setLockoutUntil(lockUntil);
         localStorage.setItem('admin_reauth_lockout_until', lockUntil.toString());
-        setVerifyError(`⛔ Security Lockout Triggered (${nextCount}/${MAX_REAUTH_ATTEMPTS} Failed Attempts): Access locked for 15 minutes to prevent brute-force attacks.`);
+        setVerifyError(`⛔ Security Lockout: Maximum failed verification attempts (${nextCount}/${MAX_REAUTH_ATTEMPTS}). Locked for ${lockMinutes} minute(s).`);
       } else {
         const remaining = MAX_REAUTH_ATTEMPTS - nextCount;
-        setVerifyError(`Authorization failed: Invalid password. (${nextCount}/${MAX_REAUTH_ATTEMPTS} attempts used — ${remaining} remaining before 15-min lockout).`);
+        setVerifyError(`Authorization failed: Invalid password. (${nextCount}/${MAX_REAUTH_ATTEMPTS} attempts used — ${remaining} remaining before lockout).`);
       }
     };
 
@@ -232,6 +238,7 @@ export default function AdminSettingsPage() {
         setLockoutUntil(null);
         localStorage.removeItem('admin_reauth_failed_count');
         localStorage.removeItem('admin_reauth_lockout_until');
+        localStorage.removeItem('admin_reauth_lockout_level');
         setMessage({ type: 'success', text: '🔓 Identity verified! Critical settings are unlocked for temporary editing.' });
       } else {
         registerFailedAttempt();
@@ -256,6 +263,7 @@ export default function AdminSettingsPage() {
         setLockoutUntil(null);
         localStorage.removeItem('admin_reauth_failed_count');
         localStorage.removeItem('admin_reauth_lockout_until');
+        localStorage.removeItem('admin_reauth_lockout_level');
         setMessage({ type: 'success', text: '🔓 Identity verified via Supabase Auth! Settings unlocked temporarily.' });
       }
     } catch {
