@@ -6,8 +6,6 @@ import { WhatsAppFloatingWidget } from '../components/common/WhatsAppFloatingWid
 import { ScrollToTop } from '../components/common/ScrollToTop';
 import { useDoctor } from '../hooks/useDoctor';
 import { useClinics } from '../hooks/useClinics';
-import { isSupabaseConfigured } from '../lib/supabase';
-import { Info } from 'lucide-react';
 import './PublicLayout.css';
 
 export default function PublicLayout() {
@@ -19,14 +17,6 @@ export default function PublicLayout() {
   return (
     <div className="public-layout">
       <ScrollToTop />
-      {!isSupabaseConfigured && (
-        <div className="preview-banner">
-          <Info size={16} />
-          <span>
-            <strong>Preview Mode:</strong> Add <code>VITE_SUPABASE_URL</code> and <code>VITE_SUPABASE_ANON_KEY</code> to <code>.env</code> to connect your live database.
-          </span>
-        </div>
-      )}
       <Header doctorName={doctor?.full_name} />
       <main className="public-layout__main">
         <Outlet />
