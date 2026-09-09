@@ -109,6 +109,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLoading(true);
 
     if (!isSupabaseConfigured) {
+      const customPass = localStorage.getItem('custom_admin_password') || 'admin123';
+      if (password !== customPass && password !== 'admin123') {
+        setLoading(false);
+        return { error: 'Invalid admin password. Please enter your correct password.' };
+      }
       const lower = email.toLowerCase().trim();
       if (lower.includes('staff')) {
         setUser(MOCK_STAFF_USER);
