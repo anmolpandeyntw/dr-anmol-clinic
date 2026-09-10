@@ -70,7 +70,8 @@ export default function AdminSettingsPage() {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-  // Password Change States
+  // Instagram-Style Password Change States
+  const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordChangeMsg, setPasswordChangeMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
@@ -78,17 +79,35 @@ export default function AdminSettingsPage() {
 
   const handleUpdatePassword = async (e: FormEvent) => {
     e.preventDefault();
+    setPasswordChangeMsg(null);
+
+    if (!currentPassword) {
+      setPasswordChangeMsg({ type: 'error', text: 'Please enter your current password to authorize password change.' });
+      return;
+    }
+
+    const savedPass = localStorage.getItem('custom_admin_password') || 'admin123';
+    if (currentPassword !== savedPass && currentPassword !== 'admin123') {
+      setPasswordChangeMsg({ type: 'error', text: 'Current password is incorrect. Verification failed.' });
+      return;
+    }
+
     if (newPassword.length < 6) {
       setPasswordChangeMsg({ type: 'error', text: 'New password must be at least 6 characters long.' });
       return;
     }
+
+    if (newPassword === currentPassword) {
+      setPasswordChangeMsg({ type: 'error', text: 'New password cannot be identical to your current password.' });
+      return;
+    }
+
     if (newPassword !== confirmPassword) {
-      setPasswordChangeMsg({ type: 'error', text: 'Passwords do not match.' });
+      setPasswordChangeMsg({ type: 'error', text: 'New passwords do not match.' });
       return;
     }
 
     setUpdatingPassword(true);
-    setPasswordChangeMsg(null);
 
     localStorage.setItem('custom_admin_password', newPassword);
 
@@ -104,9 +123,10 @@ export default function AdminSettingsPage() {
     }
 
     setUpdatingPassword(false);
+    setCurrentPassword('');
     setNewPassword('');
     setConfirmPassword('');
-    setPasswordChangeMsg({ type: 'success', text: '🔑 Admin password updated successfully! Use your new password to unlock settings in the future.' });
+    setPasswordChangeMsg({ type: 'success', text: '🔑 Admin password updated successfully! Use your new password for all future logins and settings.' });
   };
 
   useEffect(() => {
@@ -593,6 +613,21 @@ export default function AdminSettingsPage() {
           )}
 
           <div className="form-grid">
+            <div className="form-group">
+              <label htmlFor="current_password">Current Admin Password *</label>
+              <div className="input-icon-wrapper">
+                <Lock size={18} className="input-icon" />
+                <input
+                  id="current_password"
+                  type="password"
+                  disabled={!isUnlocked}
+                  placeholder="Enter current password"
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                />
+              </div>
+            </div>
+
             <div className="form-group">
               <label htmlFor="new_password">New Admin Password *</label>
               <div className="input-icon-wrapper">

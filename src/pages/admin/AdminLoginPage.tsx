@@ -1,22 +1,20 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { FormEvent } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { supabase } from '../../lib/supabase';
 import { Button } from '../../components/common/Button';
 import { Card } from '../../components/common/Card';
-import { ShieldCheck, Lock, Mail, User, AlertCircle, CheckCircle2, UserPlus, LogIn, KeyRound, X, ShieldAlert } from 'lucide-react';
+import { ShieldCheck, Lock, Mail, AlertCircle, CheckCircle2, KeyRound, X, ShieldAlert, Clock } from 'lucide-react';
 import './AdminLoginPage.css';
 
 const MAX_LOGIN_ATTEMPTS = 5;
 
 export default function AdminLoginPage() {
-  const [mode, setMode] = useState<'login' | 'register'>('login');
-  const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [authError, setAuthError] = useState<string | null>(null);
-  const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  const [inactivityMsg, setInactivityMsg] = useState<string | null>(null);
 
   // Rate Limiting State for Sign-In
   const [failedLoginAttempts, setFailedLoginAttempts] = useState<number>(() => {
@@ -35,11 +33,20 @@ export default function AdminLoginPage() {
   const [resetLoading, setResetLoading] = useState(false);
   const [resetMsg, setResetMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-  const { signIn, signUp, loading } = useAuth();
+  const { signIn, loading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
   const from = (location.state as { from?: { pathname: string } })?.from?.pathname || '/admin/dashboard';
+
+  // Check 5-minute inactivity auto-logout notice
+  useEffect(() => {
+    const expiredReason = sessionStorage.getItem('session_expired_reason');
+    if (expiredReason === 'inactivity') {
+      setInactivityMsg('⏰ Session Expired: You were automatically logged out after 5 minutes of inactivity for security.');
+      sessionStorage.removeItem('session_expired_reason');
+    }
+  }, []);
 
   // Helper to check active login lockout
   const checkLoginLockout = (): { isLocked: boolean; remainingMins: number } => {
@@ -60,7 +67,7 @@ export default function AdminLoginPage() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setAuthError(null);
-    setSuccessMsg(null);
+    setInactivityMsg(null);
 
     // Check active lockout
     const lockout = checkLoginLockout();
@@ -79,47 +86,35 @@ export default function AdminLoginPage() {
       return;
     }
 
-    if (mode === 'register') {
-      const { error } = await signUp(email, password, fullName || 'Dr. Anmol Pandey');
-      if (error) {
-        setAuthError(error);
+    const { error } = await signIn(email, password);
+    if (error) {
+      const nextCount = failedLoginAttempts + 1;
+      setFailedLoginAttempts(nextCount);
+      localStorage.setItem('admin_login_failed_count', nextCount.toString());
+
+      if (nextCount >= MAX_LOGIN_ATTEMPTS) {
+        const currentLevel = parseInt(localStorage.getItem('admin_login_lockout_level') || '0', 10) + 1;
+        localStorage.setItem('admin_login_lockout_level', currentLevel.toString());
+
+        let lockMinutes = 2; // Level 1: 2 minutes
+        if (currentLevel === 2) lockMinutes = 3; // Level 2: 3 minutes
+        else if (currentLevel >= 3) lockMinutes = 5; // Level 3+: 5 minutes
+
+        const lockTime = Date.now() + (lockMinutes * 60 * 1000);
+        setLoginLockoutUntil(lockTime);
+        localStorage.setItem('admin_login_lockout_until', lockTime.toString());
+        setAuthError(`⛔ Security Lockout: Maximum failed login attempts (${nextCount}/${MAX_LOGIN_ATTEMPTS}). Sign-in locked for ${lockMinutes} minute(s).`);
       } else {
-        setSuccessMsg('🎉 Admin account created successfully! Redirecting to Dashboard...');
-        setTimeout(() => {
-          navigate(from, { replace: true });
-        }, 1000);
+        const remaining = MAX_LOGIN_ATTEMPTS - nextCount;
+        setAuthError(`Authorization failed: ${error} (${nextCount}/${MAX_LOGIN_ATTEMPTS} attempts used — ${remaining} remaining before lockout).`);
       }
     } else {
-      const { error } = await signIn(email, password);
-      if (error) {
-        const nextCount = failedLoginAttempts + 1;
-        setFailedLoginAttempts(nextCount);
-        localStorage.setItem('admin_login_failed_count', nextCount.toString());
-
-        if (nextCount >= MAX_LOGIN_ATTEMPTS) {
-          const currentLevel = parseInt(localStorage.getItem('admin_login_lockout_level') || '0', 10) + 1;
-          localStorage.setItem('admin_login_lockout_level', currentLevel.toString());
-
-          let lockMinutes = 2; // Level 1: 2 minutes
-          if (currentLevel === 2) lockMinutes = 3; // Level 2: 3 minutes
-          else if (currentLevel >= 3) lockMinutes = 5; // Level 3+: 5 minutes
-
-          const lockTime = Date.now() + (lockMinutes * 60 * 1000);
-          setLoginLockoutUntil(lockTime);
-          localStorage.setItem('admin_login_lockout_until', lockTime.toString());
-          setAuthError(`⛔ Security Lockout: Maximum failed login attempts (${nextCount}/${MAX_LOGIN_ATTEMPTS}). Sign-in locked for ${lockMinutes} minute(s).`);
-        } else {
-          const remaining = MAX_LOGIN_ATTEMPTS - nextCount;
-          setAuthError(`Authorization failed: ${error} (${nextCount}/${MAX_LOGIN_ATTEMPTS} attempts used — ${remaining} remaining before lockout).`);
-        }
-      } else {
-        setFailedLoginAttempts(0);
-        setLoginLockoutUntil(null);
-        localStorage.removeItem('admin_login_failed_count');
-        localStorage.removeItem('admin_login_lockout_until');
-        localStorage.removeItem('admin_login_lockout_level');
-        navigate(from, { replace: true });
-      }
+      setFailedLoginAttempts(0);
+      setLoginLockoutUntil(null);
+      localStorage.removeItem('admin_login_failed_count');
+      localStorage.removeItem('admin_login_lockout_until');
+      localStorage.removeItem('admin_login_lockout_level');
+      navigate(from, { replace: true });
     }
   };
 
@@ -142,7 +137,7 @@ export default function AdminLoginPage() {
       } else {
         setResetMsg({
           type: 'success',
-          text: '✉️ Password recovery link sent! Check your email inbox to reset your password.'
+          text: '✉️ Password recovery link sent to your email! Click the link in your inbox to reset your password.'
         });
       }
     } catch (err) {
@@ -165,27 +160,16 @@ export default function AdminLoginPage() {
             <div className="admin-login-logo">
               <ShieldCheck size={36} />
             </div>
-            <h1>Dr. Anmol Pandey</h1>
-            <p>Doctor & Admin Management Portal</p>
+            <h1>Doctor & Practice Portal</h1>
+            <p>Authorized Admin Sign-In Only</p>
           </div>
 
-          {/* Mode Switcher Tabs */}
-          <div className="admin-mode-tabs">
-            <button
-              type="button"
-              className={`mode-tab ${mode === 'login' ? 'active' : ''}`}
-              onClick={() => { setMode('login'); setAuthError(null); setSuccessMsg(null); }}
-            >
-              <LogIn size={15} /> Admin Sign In
-            </button>
-            <button
-              type="button"
-              className={`mode-tab ${mode === 'register' ? 'active' : ''}`}
-              onClick={() => { setMode('register'); setAuthError(null); setSuccessMsg(null); }}
-            >
-              <UserPlus size={15} /> Create Admin Account
-            </button>
-          </div>
+          {inactivityMsg && (
+            <div className="admin-login-warning">
+              <Clock size={18} />
+              <span>{inactivityMsg}</span>
+            </div>
+          )}
 
           {authError && (
             <div className={`admin-login-error ${currentLoginLockout.isLocked ? 'admin-login-error--locked' : ''}`}>
@@ -194,38 +178,15 @@ export default function AdminLoginPage() {
             </div>
           )}
 
-          {successMsg && (
-            <div className="admin-login-success">
-              <CheckCircle2 size={18} />
-              <span>{successMsg}</span>
-            </div>
-          )}
-
           <form onSubmit={handleSubmit} className="admin-login-form">
-            {mode === 'register' && (
-              <div className="form-group">
-                <label htmlFor="fullName">Full Name</label>
-                <div className="input-icon-wrapper">
-                  <User size={18} className="input-icon" />
-                  <input
-                    id="fullName"
-                    type="text"
-                    placeholder="Dr. Anmol Pandey"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                  />
-                </div>
-              </div>
-            )}
-
             <div className="form-group">
-              <label htmlFor="email">Email Address</label>
+              <label htmlFor="email">Admin Email Address</label>
               <div className="input-icon-wrapper">
                 <Mail size={18} className="input-icon" />
                 <input
                   id="email"
                   type="email"
-                  placeholder="anmolpandeyntw@gmail.com"
+                  placeholder="admin@clinic.com"
                   value={email}
                   disabled={currentLoginLockout.isLocked}
                   onChange={(e) => setEmail(e.target.value)}
@@ -237,15 +198,13 @@ export default function AdminLoginPage() {
             <div className="form-group">
               <div className="label-with-forgot">
                 <label htmlFor="password">Password</label>
-                {mode === 'login' && (
-                  <button
-                    type="button"
-                    className="forgot-link"
-                    onClick={() => { setShowForgotModal(true); setResetEmail(email); }}
-                  >
-                    Forgot Password?
-                  </button>
-                )}
+                <button
+                  type="button"
+                  className="forgot-link"
+                  onClick={() => { setShowForgotModal(true); setResetEmail(email); }}
+                >
+                  Forgot Password?
+                </button>
               </div>
               <div className="input-icon-wrapper">
                 <Lock size={18} className="input-icon" />
@@ -271,12 +230,12 @@ export default function AdminLoginPage() {
             >
               {currentLoginLockout.isLocked
                 ? `Locked (${currentLoginLockout.remainingMins}m remaining)`
-                : (mode === 'register' ? 'Create Admin Account & Log In' : 'Sign In to Dashboard')}
+                : 'Sign In to Dashboard'}
             </Button>
           </form>
 
           <div className="admin-login-demo-notice">
-            <p><strong>Admin Sign-In:</strong> Use your registered doctor credentials to sign in into Supabase Auth.</p>
+            <p><strong>Security Notice:</strong> Sessions automatically expire after 5 minutes of inactivity. Access is restricted to pre-authorized clinic admins.</p>
           </div>
         </Card>
       </div>
@@ -316,7 +275,7 @@ export default function AdminLoginPage() {
                     id="resetEmail"
                     type="email"
                     required
-                    placeholder="anmolpandeyntw@gmail.com"
+                    placeholder="admin@clinic.com"
                     value={resetEmail}
                     onChange={(e) => setResetEmail(e.target.value)}
                   />

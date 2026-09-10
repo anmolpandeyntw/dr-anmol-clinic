@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useRef } from 'react';
 import type { ReactNode } from 'react';
 import type { User, Session } from '@supabase/supabase-js';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
@@ -17,14 +17,16 @@ export interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const INACTIVITY_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes (300,000 ms)
+
 // Mock user sessions when Supabase is running in preview mode
 const MOCK_ADMIN_USER: User = {
   id: 'mock-admin-uid-001',
   app_metadata: {},
-  user_metadata: { full_name: 'Dr. Amit Kumar Singh (Admin)' },
+  user_metadata: { full_name: 'Dr. Anmol Pandey (Admin)' },
   aud: 'authenticated',
   created_at: new Date().toISOString(),
-  email: 'admin@dramitsingh.com',
+  email: 'admin@clinic.com',
   phone: '',
   role: 'authenticated',
   updated_at: new Date().toISOString(),
@@ -36,7 +38,7 @@ const MOCK_STAFF_USER: User = {
   user_metadata: { full_name: 'Clinic Front Desk (Staff)' },
   aud: 'authenticated',
   created_at: new Date().toISOString(),
-  email: 'staff@dramitsingh.com',
+  email: 'staff@clinic.com',
   phone: '',
   role: 'authenticated',
   updated_at: new Date().toISOString(),
@@ -47,6 +49,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [role, setRole] = useState<AppRole | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const lastActivityRef = useRef<number>(Date.now());
 
   // Fetch role from user_roles table
   const fetchUserRole = async (userId: string): Promise<AppRole> => {
@@ -105,6 +109,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
+  // 5-Minute Inactivity Auto-Logout Mechanism
+  useEffect(() => {
+    if (!user) return;
+
+    const resetInactivityTimer = () => {
+      lastActivityRef.current = Date.now();
+    };
+
+    const events = ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart', 'click'];
+    events.forEach(event => window.addEventListener(event, resetInactivityTimer, { passive: true }));
+
+    const checkInterval = setInterval(() => {
+      const elapsed = Date.now() - lastActivityRef.current;
+      if (elapsed >= INACTIVITY_TIMEOUT_MS) {
+        sessionStorage.setItem('session_expired_reason', 'inactivity');
+        signOut();
+      }
+    }, 5000);
+
+    return () => {
+      events.forEach(event => window.removeEventListener(event, resetInactivityTimer));
+      clearInterval(checkInterval);
+    };
+  }, [user]);
+
   const signIn = async (email: string, password: string): Promise<{ error: string | null }> => {
     setLoading(true);
 
@@ -124,6 +153,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setRole('admin');
         localStorage.setItem('mock_admin_role', 'admin');
       }
+      lastActivityRef.current = Date.now();
+      sessionStorage.removeItem('session_expired_reason');
       setLoading(false);
       return { error: null };
     }
@@ -131,6 +162,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
     if (error) return { error: error.message };
+    
+    lastActivityRef.current = Date.now();
+    sessionStorage.removeItem('session_expired_reason');
     return { error: null };
   };
 
@@ -160,7 +194,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       if (data.user) {
-        // Assign Admin role in user_roles table
         await supabase
           .from('user_roles')
           .upsert([{ user_id: data.user.id, role: 'admin' }], { onConflict: 'user_id' });
