@@ -15,6 +15,7 @@ const NotFoundPage = lazy(() => import('../pages/NotFoundPage'));
 
 // Admin pages
 const AdminLoginPage = lazy(() => import('../pages/admin/AdminLoginPage'));
+const AdminResetPasswordPage = lazy(() => import('../pages/admin/AdminResetPasswordPage'));
 const AdminDashboardPage = lazy(() => import('../pages/admin/AdminDashboardPage'));
 const AdminAppointmentsPage = lazy(() => import('../pages/admin/AdminAppointmentsPage'));
 const AdminQueuePage = lazy(() => import('../pages/admin/AdminQueuePage'));
@@ -124,6 +125,15 @@ const router = createBrowserRouter([
     element: (
       <Suspense fallback={<FullPageLoader />}>
         <AdminLoginPage />
+      </Suspense>
+    ),
+  },
+  // Unlinked Password Reset Route
+  {
+    path: '/admin/reset-password',
+    element: (
+      <Suspense fallback={<FullPageLoader />}>
+        <AdminResetPasswordPage />
       </Suspense>
     ),
   },
