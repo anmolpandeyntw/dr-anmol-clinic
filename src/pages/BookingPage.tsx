@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useClinics } from '../hooks/useClinics';
 import { useAvailableSlots, useScheduleData } from '../hooks/useAvailableSlots';
@@ -54,9 +54,14 @@ export default function BookingPage() {
     }
   }, [preselectedClinicId, clinics, formData.clinic_id, updateField]);
 
-  // Auto-scroll to top when step changes
+  const stepContainerRef = useRef<HTMLDivElement>(null);
+
+  // Smooth scroll to booking step container when step changes (not top of entire page header)
   useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+    if (stepContainerRef.current) {
+      const topOffset = stepContainerRef.current.getBoundingClientRect().top + window.scrollY - 80;
+      window.scrollTo({ top: Math.max(0, topOffset), behavior: 'smooth' });
+    }
   }, [step]);
 
   // Fetch schedule and blocked dates when clinic changes
@@ -84,7 +89,7 @@ export default function BookingPage() {
         </div>
       </div>
 
-      <div className="container container-narrow booking-page__content">
+      <div className="container container-narrow booking-page__content" ref={stepContainerRef}>
         <BookingProgress currentStep={step} totalSteps={7} />
 
         <div className="booking-page__step-container">
