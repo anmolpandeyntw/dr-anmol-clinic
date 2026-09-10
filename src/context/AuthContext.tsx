@@ -17,7 +17,7 @@ export interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const INACTIVITY_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes (300,000 ms)
+const INACTIVITY_TIMEOUT_MS = 15 * 60 * 1000; // 15 minutes of total idle inactivity
 
 // Mock user sessions when Supabase is running in preview mode
 const MOCK_ADMIN_USER: User = {
@@ -109,43 +109,42 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  // 5-Minute Inactivity Auto-Logout Mechanism (Resets timer on user login & active interactions)
+  // 15-Minute Inactivity Auto-Logout Mechanism (Resets timer on active user interaction)
   useEffect(() => {
     if (!user) return;
 
-    // Reset activity timestamp immediately whenever user is logged in / changed
-    lastActivityRef.current = Date.now();
+    let timeoutId: ReturnType<typeof setTimeout>;
 
     const resetInactivityTimer = () => {
+      if (timeoutId) clearTimeout(timeoutId);
       lastActivityRef.current = Date.now();
+      
+      // Auto-logout only after 15 minutes of zero user activity
+      timeoutId = setTimeout(() => {
+        console.warn('⚠️ Admin session expired due to inactivity.');
+        sessionStorage.setItem('session_expired_reason', 'inactivity');
+        signOut();
+      }, INACTIVITY_TIMEOUT_MS);
     };
 
+    // Reset activity timer immediately upon login
+    resetInactivityTimer();
+
+    // Listen to user activity - any click or interaction resets the 15-minute window
     const events = ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart', 'click', 'pointerdown', 'focus'];
     events.forEach(event => window.addEventListener(event, resetInactivityTimer, { passive: true }));
 
     const handleVisibilityChange = () => {
       if (!document.hidden) {
-        lastActivityRef.current = Date.now();
+        resetInactivityTimer();
       }
     };
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
-    const checkInterval = setInterval(() => {
-      // Don't auto-logout if tab is currently active and user is interacting
-      if (document.hidden) return;
-
-      const elapsed = Date.now() - lastActivityRef.current;
-      if (elapsed >= INACTIVITY_TIMEOUT_MS) {
-        console.warn('⚠️ Session expired due to 5 minutes of total inactivity.');
-        sessionStorage.setItem('session_expired_reason', 'inactivity');
-        signOut();
-      }
-    }, 5000);
-
     return () => {
+      if (timeoutId) clearTimeout(timeoutId);
       events.forEach(event => window.removeEventListener(event, resetInactivityTimer));
       document.removeEventListener('visibilitychange', handleVisibilityChange);
-      clearInterval(checkInterval);
     };
   }, [user]);
 
