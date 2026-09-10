@@ -109,20 +109,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  // 5-Minute Inactivity Auto-Logout Mechanism
+  // 5-Minute Inactivity Auto-Logout Mechanism (Resets timer on user login & active interactions)
   useEffect(() => {
     if (!user) return;
+
+    // Reset activity timestamp immediately whenever user is logged in / changed
+    lastActivityRef.current = Date.now();
 
     const resetInactivityTimer = () => {
       lastActivityRef.current = Date.now();
     };
 
-    const events = ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart', 'click'];
+    const events = ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart', 'click', 'pointerdown', 'focus'];
     events.forEach(event => window.addEventListener(event, resetInactivityTimer, { passive: true }));
 
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        lastActivityRef.current = Date.now();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
     const checkInterval = setInterval(() => {
+      // Don't auto-logout if tab is currently active and user is interacting
+      if (document.hidden) return;
+
       const elapsed = Date.now() - lastActivityRef.current;
       if (elapsed >= INACTIVITY_TIMEOUT_MS) {
+        console.warn('⚠️ Session expired due to 5 minutes of total inactivity.');
         sessionStorage.setItem('session_expired_reason', 'inactivity');
         signOut();
       }
@@ -130,6 +144,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     return () => {
       events.forEach(event => window.removeEventListener(event, resetInactivityTimer));
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       clearInterval(checkInterval);
     };
   }, [user]);
