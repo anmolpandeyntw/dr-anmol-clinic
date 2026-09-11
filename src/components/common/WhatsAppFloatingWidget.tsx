@@ -18,7 +18,7 @@ export const WhatsAppFloatingWidget: React.FC<WhatsAppFloatingWidgetProps> = ({
   const fullWhatsAppNumber = `91${cleanPhone || '9450000000'}`;
 
   const defaultQueries = [
-    'Hello, I want to book an appointment with {doctorName}.',
+    `Hello, I want to book an appointment with ${doctorName}.`,
     'What are the clinic OPD timings and address?',
     'What is the consultation fee for Nephrology consultation?',
     'Is emergency kidney dialysis support available today?'
