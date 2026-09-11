@@ -9,7 +9,7 @@ interface WhatsAppFloatingWidgetProps {
 
 export const WhatsAppFloatingWidget: React.FC<WhatsAppFloatingWidgetProps> = ({
   clinicPhone = '9450000000',
-  doctorName = 'Dr. Amit Kumar Singh'
+  doctorName = 'Dr. Anmol Pandey'
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [customMessage, setCustomMessage] = useState('');
@@ -40,9 +40,13 @@ export const WhatsAppFloatingWidget: React.FC<WhatsAppFloatingWidgetProps> = ({
           <div className="whatsapp-card-header">
             <div className="whatsapp-avatar-group">
               <div className="whatsapp-avatar">
-                <span className="online-indicator"></span>
-                👨‍⚕️
-              </div>
+  <span className="online-indicator"></span>
+  <img 
+    src="/images/clinic_logo.jpg" 
+    alt={`${doctorName} Logo`}
+    className="whatsapp-avatar-logo"
+  />
+</div>
               <div>
                 <h4 className="whatsapp-card-title">{doctorName} Desk</h4>
                 <p className="whatsapp-card-subtitle">
