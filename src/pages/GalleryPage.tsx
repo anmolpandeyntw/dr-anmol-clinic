@@ -52,7 +52,7 @@ export default function GalleryPage() {
       title: 'Guest Lecture on Living Donor Renal Transplant Protocols',
       location: 'Dr. RML Institute of Medical Sciences, Lucknow',
       year: '2025',
-      imageUrl: '/images/anmol_lecture.jpg',
+      imageUrl: '/images/anmol_lecture.png',
       caption: `${doctorName} in formal suit delivering an interactive keynote guest lecture at the International Medical Conference.`
     },
     {
@@ -61,7 +61,7 @@ export default function GalleryPage() {
       title: 'Felicitation & Medical Association Honor',
       location: 'Lucknow Medical Association Convention',
       year: '2024',
-      imageUrl: '/images/anmol_award.jpg',
+      imageUrl: '/images/anmol_award.png',
       caption: `${doctorName} honored for clinical contributions in kidney disease management and renal transplant medicine.`
     },
     {
@@ -70,7 +70,7 @@ export default function GalleryPage() {
       title: `${doctorName} Clinical Visit & Site Inspection`,
       location: 'Vibhuti Khand, Gomti Nagar, Lucknow',
       year: '2025',
-      imageUrl: '/images/anmol_real_original.jpg',
+      imageUrl: '/images/anmol_real_original.png',
       caption: `${doctorName} during clinic site visits and patient facility inspections.`
     }
   ];
