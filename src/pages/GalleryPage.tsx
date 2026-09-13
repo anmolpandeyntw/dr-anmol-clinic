@@ -1,80 +1,21 @@
 import { useState } from 'react';
 import { useDoctor } from '../hooks/useDoctor';
+import { useHonorsMedia } from '../hooks/useHonorsMedia';
+import type { GalleryItem } from '../hooks/useHonorsMedia';
 import { Card } from '../components/common/Card';
 import { FullPageLoader } from '../components/common/LoadingSpinner';
 import { Award, Image as ImageIcon, MapPin, ShieldCheck } from 'lucide-react';
 import './GalleryPage.css';
 
-interface GalleryItem {
-  id: string;
-  category: 'awards' | 'lectures' | 'clinics' | 'dialysis';
-  title: string;
-  location: string;
-  imageUrl: string;
-  caption: string;
-  year: string;
-}
-
 export default function GalleryPage() {
-  const { doctor, loading } = useDoctor();
+  const { doctor, loading: doctorLoading } = useDoctor();
+  const { milestones, galleryItems, loading: mediaLoading } = useHonorsMedia();
   const [activeTab, setActiveTab] = useState<'all' | 'awards' | 'lectures' | 'clinics' | 'dialysis'>('all');
   const [lightboxImg, setLightboxImg] = useState<GalleryItem | null>(null);
 
-  if (loading) return <FullPageLoader />;
+  if (doctorLoading || mediaLoading) return <FullPageLoader />;
 
   const doctorName = doctor?.full_name || 'Dr. Anmol Pandey';
-
-  const milestones = [
-    {
-      stat: 'GOLD MEDAL',
-      title: 'DNB Nephrology Academic Standing',
-      sub: 'Dr. RML Institute of Medical Sciences, Lucknow',
-      imgUrl: '/images/gold_medal_badge.jpg'
-    },
-    {
-      stat: 'ISN HONOR',
-      title: 'ISN Research Excellence Award',
-      sub: 'Indian Society of Nephrology (ISNCON Conference)',
-      imgUrl: '/images/isn_award_badge.jpg'
-    },
-    {
-      stat: 'NABH CERTIFIED',
-      title: 'NABH Quality Healthcare Standards',
-      sub: 'Certified OPD & Dialysis Care Protocol',
-      imgUrl: '/images/nabh_accredited_badge.jpg'
-    }
-  ];
-
-  const galleryItems: GalleryItem[] = [
-    {
-      id: 'g-01',
-      category: 'lectures',
-      title: 'Guest Lecture on Living Donor Renal Transplant Protocols',
-      location: 'Dr. RML Institute of Medical Sciences, Lucknow',
-      year: '2025',
-      imageUrl: '/images/anmol_lecture.png',
-      caption: `${doctorName} in formal suit delivering an interactive keynote guest lecture at the International Medical Conference.`
-    },
-    {
-      id: 'g-02',
-      category: 'awards',
-      title: 'Felicitation & Medical Association Honor',
-      location: 'Lucknow Medical Association Convention',
-      year: '2024',
-      imageUrl: '/images/anmol_award.png',
-      caption: `${doctorName} honored for clinical contributions in kidney disease management and renal transplant medicine.`
-    },
-    {
-      id: 'g-03',
-      category: 'clinics',
-      title: `${doctorName} Clinical Visit & Site Inspection`,
-      location: 'Vibhuti Khand, Gomti Nagar, Lucknow',
-      year: '2025',
-      imageUrl: '/images/anmol_real_original.png',
-      caption: `${doctorName} during clinic site visits and patient facility inspections.`
-    }
-  ];
-
   const filteredItems = galleryItems.filter(item => activeTab === 'all' || item.category === activeTab);
 
   return (
@@ -107,7 +48,7 @@ export default function GalleryPage() {
             {milestones.map((m, idx) => (
               <div key={idx} className="milestone-card">
                 <div className="m-card-seal-wrapper">
-                  <img src={m.imgUrl} alt={m.title} className="m-card-seal-img" />
+                  <img src={m.image_url} alt={m.title} className="m-card-seal-img" />
                 </div>
                 <div className="m-card-body">
                   <span className="m-stat">{m.stat}</span>

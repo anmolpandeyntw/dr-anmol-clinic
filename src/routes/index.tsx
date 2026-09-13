@@ -25,6 +25,7 @@ const AdminProfilePage = lazy(() => import('../pages/admin/AdminProfilePage'));
 const AdminSettingsPage = lazy(() => import('../pages/admin/AdminSettingsPage'));
 const AdminPaymentsPage = lazy(() => import('../pages/admin/AdminPaymentsPage'));
 const AdminOnlineConsultPage = lazy(() => import('../pages/admin/AdminOnlineConsultPage'));
+const AdminHonorsMediaPage = lazy(() => import('../pages/admin/AdminHonorsMediaPage'));
 const PublicOnlineConsultPage = lazy(() => import('../pages/PublicOnlineConsultPage'));
 const AppointmentTokenPage = lazy(() => import('../pages/AppointmentTokenPage'));
 
@@ -179,6 +180,14 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<FullPageLoader />}>
             <AdminClinicsPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'honors-media',
+        element: (
+          <Suspense fallback={<FullPageLoader />}>
+            <AdminHonorsMediaPage />
           </Suspense>
         ),
       },

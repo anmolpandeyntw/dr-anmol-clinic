@@ -10,7 +10,8 @@ import {
   CreditCard,
   Settings,
   ShieldCheck,
-  UserCheck
+  UserCheck,
+  Award
 } from 'lucide-react';
 import './AdminSidebar.css';
 
@@ -28,6 +29,7 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
   { label: 'Appointments', path: '/admin/appointments', icon: CalendarCheck },
   { label: 'Live Queue', path: '/admin/queue', icon: Users },
   { label: 'Clinics & Hospitals', path: '/admin/clinics', icon: Building2, adminOnly: true },
+  { label: 'Honors & Media Gallery', path: '/admin/honors-media', icon: Award, adminOnly: true },
   { label: 'Special Dates / Leaves', path: '/admin/special-dates', icon: CalendarCheck, adminOnly: true },
   { label: 'Doctor Profile', path: '/admin/profile', icon: User, adminOnly: true },
   { label: 'Fees & Payments', path: '/admin/payments', icon: CreditCard },
