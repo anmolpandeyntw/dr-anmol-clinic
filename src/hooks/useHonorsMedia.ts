@@ -12,7 +12,7 @@ export interface MilestoneItem {
 
 export interface GalleryItem {
   id: string;
-  category: 'awards' | 'lectures' | 'clinics' | 'dialysis';
+  category: string; // supports standard ('awards', 'lectures', 'clinics', 'dialysis') and custom user categories
   title: string;
   location: string;
   year: string;

@@ -554,6 +554,43 @@ textarea.form-control {
   display: none;
 }
 
+.preset-chips-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.preset-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+}
+
+.preset-chip {
+  background: #F1F5F9;
+  border: 1px solid var(--color-border);
+  color: var(--color-primary);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 9px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.preset-chip:hover {
+  background: #E2E8F0;
+  color: var(--color-medical-blue);
+}
+
+.preset-chip.active {
+  background: var(--color-medical-blue);
+  color: #FFFFFF;
+  border-color: var(--color-medical-blue);
+}
+
 .modal-footer {
   padding: 16px 24px;
   background: #F8FAFC;

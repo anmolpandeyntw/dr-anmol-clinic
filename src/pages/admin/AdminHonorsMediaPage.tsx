@@ -17,6 +17,23 @@ import {
 } from 'lucide-react';
 import './AdminHonorsMediaPage.css';
 
+const STANDARD_CATEGORIES: Record<string, string> = {
+  awards: 'Awards & Felicitations',
+  lectures: 'Guest Lectures',
+  clinics: 'OPD Clinics',
+  dialysis: 'Dialysis Setup'
+};
+
+const MEDAL_PRESETS = [
+  'GOLD MEDAL',
+  'ISN HONOR',
+  'NABH CERTIFIED',
+  'FELLOWSHIP',
+  'RESEARCH AWARD',
+  'ACADEMIC AWARD',
+  'TRANSPLANT EXCELLENCE'
+];
+
 export default function AdminHonorsMediaPage() {
   const {
     milestones,
@@ -29,7 +46,7 @@ export default function AdminHonorsMediaPage() {
   } = useHonorsMedia();
 
   const [activeMainTab, setActiveMainTab] = useState<'milestones' | 'gallery'>('gallery');
-  const [activeCategoryFilter, setActiveCategoryFilter] = useState<'all' | 'awards' | 'lectures' | 'clinics' | 'dialysis'>('all');
+  const [activeCategoryFilter, setActiveCategoryFilter] = useState<string>('all');
 
   // Milestone Form Modal State
   const [showMilestoneModal, setShowMilestoneModal] = useState(false);
@@ -42,7 +59,8 @@ export default function AdminHonorsMediaPage() {
   // Gallery Item Form Modal State
   const [showGalleryModal, setShowGalleryModal] = useState(false);
   const [editingGallery, setEditingGallery] = useState<GalleryItem | null>(null);
-  const [gCategory, setGCategory] = useState<'awards' | 'lectures' | 'clinics' | 'dialysis'>('awards');
+  const [gCategorySelect, setGCategorySelect] = useState<string>('awards');
+  const [gCustomCategoryInput, setGCustomCategoryInput] = useState<string>('');
   const [gTitle, setGTitle] = useState('');
   const [gLocation, setGLocation] = useState('');
   const [gYear, setGYear] = useState('2025');
@@ -59,6 +77,10 @@ export default function AdminHonorsMediaPage() {
   const filteredGallery = galleryItems.filter(
     item => activeCategoryFilter === 'all' || item.category === activeCategoryFilter
   );
+
+  // Dynamic unique categories from all items
+  const uniqueCategories = Array.from(new Set(galleryItems.map(g => g.category)));
+  const customCategories = uniqueCategories.filter(c => !STANDARD_CATEGORIES[c]);
 
   // Open Milestone Add/Edit Modal
   const handleOpenMilestoneModal = (item?: MilestoneItem) => {
@@ -82,7 +104,13 @@ export default function AdminHonorsMediaPage() {
   const handleOpenGalleryModal = (item?: GalleryItem) => {
     if (item) {
       setEditingGallery(item);
-      setGCategory(item.category);
+      if (STANDARD_CATEGORIES[item.category]) {
+        setGCategorySelect(item.category);
+        setGCustomCategoryInput('');
+      } else {
+        setGCategorySelect('custom');
+        setGCustomCategoryInput(item.category);
+      }
       setGTitle(item.title);
       setGLocation(item.location);
       setGYear(item.year || '2025');
@@ -90,7 +118,14 @@ export default function AdminHonorsMediaPage() {
       setGCaption(item.caption);
     } else {
       setEditingGallery(null);
-      setGCategory(activeCategoryFilter === 'all' ? 'awards' : activeCategoryFilter);
+      const defaultCat = activeCategoryFilter === 'all' ? 'awards' : activeCategoryFilter;
+      if (STANDARD_CATEGORIES[defaultCat]) {
+        setGCategorySelect(defaultCat);
+        setGCustomCategoryInput('');
+      } else {
+        setGCategorySelect('custom');
+        setGCustomCategoryInput(defaultCat === 'all' ? '' : defaultCat);
+      }
       setGTitle('');
       setGLocation('');
       setGYear(new Date().getFullYear().toString());
@@ -146,10 +181,14 @@ export default function AdminHonorsMediaPage() {
       return;
     }
 
+    const finalCategory = gCategorySelect === 'custom'
+      ? (gCustomCategoryInput.trim() || 'General')
+      : gCategorySelect;
+
     setSaving(true);
     await saveGalleryItem({
       id: editingGallery?.id,
-      category: gCategory,
+      category: finalCategory,
       title: gTitle.trim(),
       location: gLocation.trim() || 'Lucknow Clinic',
       year: gYear.trim() || new Date().getFullYear().toString(),
@@ -229,30 +268,30 @@ export default function AdminHonorsMediaPage() {
             >
               All Photos ({galleryItems.length})
             </button>
-            <button
-              className={`filter-chip ${activeCategoryFilter === 'awards' ? 'active' : ''}`}
-              onClick={() => setActiveCategoryFilter('awards')}
-            >
-              Awards & Felicitations ({galleryItems.filter(g => g.category === 'awards').length})
-            </button>
-            <button
-              className={`filter-chip ${activeCategoryFilter === 'lectures' ? 'active' : ''}`}
-              onClick={() => setActiveCategoryFilter('lectures')}
-            >
-              Guest Lectures ({galleryItems.filter(g => g.category === 'lectures').length})
-            </button>
-            <button
-              className={`filter-chip ${activeCategoryFilter === 'clinics' ? 'active' : ''}`}
-              onClick={() => setActiveCategoryFilter('clinics')}
-            >
-              OPD Clinics ({galleryItems.filter(g => g.category === 'clinics').length})
-            </button>
-            <button
-              className={`filter-chip ${activeCategoryFilter === 'dialysis' ? 'active' : ''}`}
-              onClick={() => setActiveCategoryFilter('dialysis')}
-            >
-              Dialysis Setup ({galleryItems.filter(g => g.category === 'dialysis').length})
-            </button>
+            {Object.entries(STANDARD_CATEGORIES).map(([key, label]) => {
+              const count = galleryItems.filter(g => g.category === key).length;
+              return (
+                <button
+                  key={key}
+                  className={`filter-chip ${activeCategoryFilter === key ? 'active' : ''}`}
+                  onClick={() => setActiveCategoryFilter(key)}
+                >
+                  {label} ({count})
+                </button>
+              );
+            })}
+            {customCategories.map((c) => {
+              const count = galleryItems.filter(g => g.category === c).length;
+              return (
+                <button
+                  key={c}
+                  className={`filter-chip ${activeCategoryFilter === c ? 'active' : ''}`}
+                  onClick={() => setActiveCategoryFilter(c)}
+                >
+                  ✨ {c} ({count})
+                </button>
+              );
+            })}
           </div>
 
           {/* Cards Grid */}
@@ -268,7 +307,9 @@ export default function AdminHonorsMediaPage() {
                       (e.target as HTMLImageElement).src = '/images/doctor_portrait.jpg';
                     }}
                   />
-                  <span className="g-admin-cat-badge">{item.category}</span>
+                  <span className="g-admin-cat-badge">
+                    {STANDARD_CATEGORIES[item.category] || item.category}
+                  </span>
                   <span className="g-admin-year-badge">{item.year}</span>
                 </div>
 
@@ -354,14 +395,27 @@ export default function AdminHonorsMediaPage() {
             <form onSubmit={handleSaveMilestoneSubmit}>
               <div className="modal-body">
                 <div className="form-group">
-                  <label>Badge Header / Tag (e.g., GOLD MEDAL, ISN HONOR)</label>
+                  <label>Badge Header / Tag (Select quick preset or type custom text below)</label>
                   <input
                     type="text"
                     className="form-control"
-                    placeholder="e.g. GOLD MEDAL"
+                    placeholder="e.g. GOLD MEDAL, DNB RANK 1, FELLOWSHIP..."
                     value={mStat}
                     onChange={(e) => setMStat(e.target.value)}
                   />
+                  <div className="preset-chips-row">
+                    <span className="preset-label">Quick Presets:</span>
+                    {MEDAL_PRESETS.map((preset) => (
+                      <button
+                        key={preset}
+                        type="button"
+                        className={`preset-chip ${mStat === preset ? 'active' : ''}`}
+                        onClick={() => setMStat(preset)}
+                      >
+                        {preset}
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
                 <div className="form-group">
@@ -461,18 +515,33 @@ export default function AdminHonorsMediaPage() {
             <form onSubmit={handleSaveGallerySubmit}>
               <div className="modal-body">
                 <div className="form-group">
-                  <label>Select Category</label>
+                  <label>Select Category or Option</label>
                   <select
                     className="form-control"
-                    value={gCategory}
-                    onChange={(e) => setGCategory(e.target.value as GalleryItem['category'])}
+                    value={gCategorySelect}
+                    onChange={(e) => setGCategorySelect(e.target.value)}
                   >
                     <option value="awards">Awards & Felicitations</option>
                     <option value="lectures">Guest Lectures</option>
                     <option value="clinics">OPD Clinics</option>
                     <option value="dialysis">Dialysis Setup</option>
+                    <option value="custom">✍️ + Create Custom Category (Type below)</option>
                   </select>
                 </div>
+
+                {gCategorySelect === 'custom' && (
+                  <div className="form-group" style={{ marginTop: '-4px' }}>
+                    <label>Custom Category Name *</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="e.g. Research Seminars, CME Workshops, Medical Camps..."
+                      value={gCustomCategoryInput}
+                      onChange={(e) => setGCustomCategoryInput(e.target.value)}
+                      required
+                    />
+                  </div>
+                )}
 
                 <div className="form-group">
                   <label>Post / Event Title *</label>

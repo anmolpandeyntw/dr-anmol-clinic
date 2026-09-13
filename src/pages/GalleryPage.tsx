@@ -7,16 +7,27 @@ import { FullPageLoader } from '../components/common/LoadingSpinner';
 import { Award, Image as ImageIcon, MapPin, ShieldCheck } from 'lucide-react';
 import './GalleryPage.css';
 
+const STANDARD_CATEGORIES: Record<string, string> = {
+  awards: 'Awards & Felicitations',
+  lectures: 'Guest Lectures',
+  clinics: 'OPD Clinics',
+  dialysis: 'Dialysis Setup'
+};
+
 export default function GalleryPage() {
   const { doctor, loading: doctorLoading } = useDoctor();
   const { milestones, galleryItems, loading: mediaLoading } = useHonorsMedia();
-  const [activeTab, setActiveTab] = useState<'all' | 'awards' | 'lectures' | 'clinics' | 'dialysis'>('all');
+  const [activeTab, setActiveTab] = useState<string>('all');
   const [lightboxImg, setLightboxImg] = useState<GalleryItem | null>(null);
 
   if (doctorLoading || mediaLoading) return <FullPageLoader />;
 
   const doctorName = doctor?.full_name || 'Dr. Anmol Pandey';
   const filteredItems = galleryItems.filter(item => activeTab === 'all' || item.category === activeTab);
+
+  // Dynamic custom categories
+  const uniqueCategories = Array.from(new Set(galleryItems.map(g => g.category)));
+  const customCategories = uniqueCategories.filter(c => !STANDARD_CATEGORIES[c]);
 
   return (
     <div className="gallery-page">
@@ -70,18 +81,24 @@ export default function GalleryPage() {
               <button className={`g-tab ${activeTab === 'all' ? 'active' : ''}`} onClick={() => setActiveTab('all')}>
                 All Photos
               </button>
-              <button className={`g-tab ${activeTab === 'awards' ? 'active' : ''}`} onClick={() => setActiveTab('awards')}>
-                Awards & Felicitations
-              </button>
-              <button className={`g-tab ${activeTab === 'lectures' ? 'active' : ''}`} onClick={() => setActiveTab('lectures')}>
-                Guest Lectures
-              </button>
-              <button className={`g-tab ${activeTab === 'clinics' ? 'active' : ''}`} onClick={() => setActiveTab('clinics')}>
-                OPD Clinics
-              </button>
-              <button className={`g-tab ${activeTab === 'dialysis' ? 'active' : ''}`} onClick={() => setActiveTab('dialysis')}>
-                Dialysis Setup
-              </button>
+              {Object.entries(STANDARD_CATEGORIES).map(([key, label]) => (
+                <button
+                  key={key}
+                  className={`g-tab ${activeTab === key ? 'active' : ''}`}
+                  onClick={() => setActiveTab(key)}
+                >
+                  {label}
+                </button>
+              ))}
+              {customCategories.map((c) => (
+                <button
+                  key={c}
+                  className={`g-tab ${activeTab === c ? 'active' : ''}`}
+                  onClick={() => setActiveTab(c)}
+                >
+                  ✨ {c}
+                </button>
+              ))}
             </div>
           </div>
 
@@ -99,7 +116,7 @@ export default function GalleryPage() {
                   />
                   <div className="gallery-img-overlay">
                     <ImageIcon size={24} className="zoom-icon" />
-                    <span>View Photo</span>
+                    <span>View Photo ({STANDARD_CATEGORIES[item.category] || item.category})</span>
                   </div>
                   <span className="g-year-badge">{item.year}</span>
                 </div>
