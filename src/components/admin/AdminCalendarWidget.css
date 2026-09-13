@@ -1,0 +1,298 @@
+.admin-calendar-widget-card {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 16px;
+  padding: 18px 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+  position: relative;
+}
+
+.calendar-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.calendar-header-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 800;
+  color: #0F172A;
+}
+
+.calendar-icon {
+  color: #0284C7;
+}
+
+.calendar-close-btn {
+  background: transparent;
+  border: none;
+  color: #64748B;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.calendar-close-btn:hover {
+  background: #F1F5F9;
+  color: #0F172A;
+}
+
+/* Month Nav */
+.calendar-month-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  padding: 8px 14px;
+  border-radius: 12px;
+  margin-bottom: 14px;
+}
+
+.month-name-heading {
+  font-size: 14px;
+  font-weight: 800;
+  color: #0B1F3A;
+}
+
+.nav-arrow-btn {
+  background: #FFFFFF;
+  border: 1px solid #CBD5E1;
+  color: #475569;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.nav-arrow-btn:hover {
+  background: #0284C7;
+  color: #FFFFFF;
+  border-color: #0284C7;
+}
+
+/* Weekday Header */
+.calendar-weekdays-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 800;
+  color: #64748B;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+/* Days Grid */
+.calendar-days-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+.day-cell {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 10px;
+  padding: 8px 4px;
+  min-height: 52px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.day-cell--empty {
+  background: transparent;
+  border-color: transparent;
+  cursor: default;
+  min-height: 52px;
+}
+
+.day-cell:not(.day-cell--empty):hover {
+  border-color: #0284C7;
+  background: #F0F9FF;
+  transform: translateY(-2px);
+}
+
+.day-cell--today {
+  border: 2px solid #0284C7;
+  background: #F0F9FF;
+}
+
+.day-cell--filter-active {
+  background: #E0F2FE;
+  border-color: #0284C7;
+}
+
+.day-cell--selected {
+  border-color: #0B1F3A;
+  box-shadow: 0 0 0 3px rgba(11, 31, 58, 0.15);
+}
+
+.day-number {
+  font-size: 13px;
+  font-weight: 800;
+  color: #1E293B;
+}
+
+.day-count-badge {
+  background: #0284C7;
+  color: #FFFFFF;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 10px;
+  line-height: 1;
+}
+
+.day-cell--today .day-count-badge {
+  background: #0B1F3A;
+}
+
+.day-count-zero {
+  font-size: 10px;
+  color: #CBD5E1;
+}
+
+/* Small Clinic Breakdown Card Modal */
+.date-breakdown-card {
+  margin-top: 16px;
+  background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+  color: #FFFFFF;
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.25);
+  animation: popInCard 0.25s ease-out;
+}
+
+@keyframes popInCard {
+  0% { transform: translateY(10px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+.breakdown-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 10px;
+}
+
+.breakdown-title {
+  margin: 0 0 4px 0;
+  font-size: 14px;
+  font-weight: 800;
+  color: #FFFFFF;
+}
+
+.breakdown-total-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #38BDF8;
+}
+
+.breakdown-close {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: #FFFFFF;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.breakdown-close:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.breakdown-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.breakdown-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.06);
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.breakdown-clinic-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: #E2E8F0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.clinic-icon {
+  color: #38BDF8;
+}
+
+.breakdown-count-pill {
+  font-size: 11px;
+  font-weight: 800;
+  color: #94A3B8;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.breakdown-count-pill.active {
+  color: #FFFFFF;
+  background: #0284C7;
+}
+
+.breakdown-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.filter-this-date-btn {
+  background: linear-gradient(135deg, #0284C7 0%, #0369A1 100%);
+  color: #FFFFFF;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+}
+
+.filter-this-date-btn:hover {
+  background: #0369A1;
+}

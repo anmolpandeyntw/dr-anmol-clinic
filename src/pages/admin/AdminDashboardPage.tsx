@@ -7,6 +7,7 @@ import type { PatientSummary } from '../../components/admin/CurrentTokenCard';
 import { NextPatientCard } from '../../components/admin/NextPatientCard';
 import { AppointmentsTable } from '../../components/admin/AppointmentsTable';
 import type { AppointmentRow } from '../../components/admin/AppointmentsTable';
+import { AdminCalendarWidget } from '../../components/admin/AdminCalendarWidget';
 import { Button } from '../../components/common/Button';
 import {
   CalendarCheck,
@@ -43,6 +44,7 @@ export default function AdminDashboardPage({ clinicId: propClinicId }: { clinicI
 
   const [selectedClinicId, setSelectedClinicId] = useState<string>(propClinicId || '');
   const [selectedDateFilter, setSelectedDateFilter] = useState<string>('all');
+  const [showCalendarWidget, setShowCalendarWidget] = useState<boolean>(false);
 
   const [rawAppointments, setRawAppointments] = useState<AppointmentRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -59,6 +61,11 @@ export default function AdminDashboardPage({ clinicId: propClinicId }: { clinicI
       setSelectedClinicId(propClinicId);
     }
   }, [propClinicId]);
+
+  // Private clinics ONLY (exclude hospital OPD attachments from clinic selector cards)
+  const privateClinicsOnly = useMemo(() => {
+    return clinics.filter(c => c.is_private_clinic !== false);
+  }, [clinics]);
 
   // Helper to resolve exact clinic name dynamically for any clinic
   const getExactClinicName = useCallback((cId: string, fallbackName?: string) => {
@@ -177,10 +184,10 @@ export default function AdminDashboardPage({ clinicId: propClinicId }: { clinicI
     });
   }, [rawAppointments, selectedClinicId, clinics]);
 
-  // Compute total counts per clinic dynamically
+  // Compute total counts per clinic dynamically (private clinics only)
   const clinicCountsMap = useMemo(() => {
     const map: Record<string, number> = {};
-    clinics.forEach(c => {
+    privateClinicsOnly.forEach(c => {
       const targetNameLow = c.name.toLowerCase().trim();
       const count = rawAppointments.filter(apt => {
         if (apt.clinic_id === c.id) return true;
@@ -193,7 +200,7 @@ export default function AdminDashboardPage({ clinicId: propClinicId }: { clinicI
       map[c.id] = count;
     });
     return map;
-  }, [rawAppointments, clinics]);
+  }, [rawAppointments, privateClinicsOnly]);
 
   // Date-wise booking counter map
   const dateCountsMap = useMemo(() => {
@@ -206,9 +213,17 @@ export default function AdminDashboardPage({ clinicId: propClinicId }: { clinicI
     return map;
   }, [clinicFilteredAppointments]);
 
-  const uniqueDatesList = useMemo(() => {
-    return Object.keys(dateCountsMap).sort((a, b) => a.localeCompare(b));
-  }, [dateCountsMap]);
+  // Quick Date Filter List: Today + Upcoming Future Dates (Exclude old past dates from strip)
+  const upcomingDatesList = useMemo(() => {
+    const upcoming = Object.keys(dateCountsMap)
+      .filter(d => d >= todayStr)
+      .sort((a, b) => a.localeCompare(b));
+
+    if (!upcoming.includes(todayStr)) {
+      upcoming.unshift(todayStr);
+    }
+    return upcoming;
+  }, [dateCountsMap, todayStr]);
 
   // Apply Date Filter
   const finalFilteredAppointments = useMemo(() => {
@@ -333,7 +348,7 @@ export default function AdminDashboardPage({ clinicId: propClinicId }: { clinicI
 
   return (
     <div className="admin-dashboard">
-      {/* 1. Interactive Clinic Selector Cards Bar */}
+      {/* 1. Interactive Private Clinic Selector Cards Bar (Hospitals excluded) */}
       <div className="clinic-selector-cards-strip">
         <div
           className={`clinic-card-chip ${selectedClinicId === '' ? 'active' : ''}`}
@@ -343,13 +358,13 @@ export default function AdminDashboardPage({ clinicId: propClinicId }: { clinicI
             <Building2 size={18} />
           </div>
           <div className="clinic-chip-info">
-            <span className="clinic-chip-name">🏥 All Clinics</span>
+            <span className="clinic-chip-name">🏥 All Private Clinics</span>
             <span className="clinic-chip-sub">Combined Overview</span>
           </div>
           <span className="clinic-chip-count-badge">{rawAppointments.length}</span>
         </div>
 
-        {clinics.map((clinic) => {
+        {privateClinicsOnly.map((clinic) => {
           const count = clinicCountsMap[clinic.id] || 0;
           const isSelected = selectedClinicId === clinic.id;
 
@@ -380,11 +395,11 @@ export default function AdminDashboardPage({ clinicId: propClinicId }: { clinicI
           </div>
           <div>
             <h2 className="greeting-title">
-              🏥 Welcome to {activeClinicObj ? activeClinicObj.name : 'All Clinics Combined Portal'}
+              🏥 Welcome to {activeClinicObj ? activeClinicObj.name : 'All Private Clinics Portal'}
             </h2>
             <p className="greeting-sub">
               <span className="greeting-meta-item">
-                <MapPin size={13} /> {activeClinicObj ? activeClinicObj.address : 'Multiple Locations across Lucknow'}
+                <MapPin size={13} /> {activeClinicObj ? activeClinicObj.address : 'Multiple Private Clinics in Lucknow'}
               </span>
               <span>•</span>
               <span className="greeting-meta-item">
@@ -400,7 +415,7 @@ export default function AdminDashboardPage({ clinicId: propClinicId }: { clinicI
         </div>
       </div>
 
-      {/* 3. Dashboard Header & Refresh Action */}
+      {/* 3. Dashboard Header & Actions */}
       <div className="admin-dashboard__header">
         <div>
           <h1>Clinic Dashboard</h1>
@@ -410,6 +425,15 @@ export default function AdminDashboardPage({ clinicId: propClinicId }: { clinicI
         </div>
 
         <div className="admin-dashboard__actions">
+          <Button
+            variant={showCalendarWidget ? 'primary' : 'outline'}
+            size="sm"
+            onClick={() => setShowCalendarWidget(!showCalendarWidget)}
+            icon={<Calendar size={14} />}
+          >
+            {showCalendarWidget ? 'Hide Month Calendar' : '📅 Month Calendar Breakdown'}
+          </Button>
+
           <Button
             variant="outline"
             size="sm"
@@ -429,7 +453,18 @@ export default function AdminDashboardPage({ clinicId: propClinicId }: { clinicI
         </div>
       )}
 
-      {/* 4. Statistics Summary Cards */}
+      {/* 4. Interactive Monthly Booking Calendar Widget */}
+      {showCalendarWidget && (
+        <AdminCalendarWidget
+          rawAppointments={rawAppointments}
+          clinics={privateClinicsOnly}
+          selectedDateFilter={selectedDateFilter}
+          onSelectDate={(date) => setSelectedDateFilter(date)}
+          onClose={() => setShowCalendarWidget(false)}
+        />
+      )}
+
+      {/* 5. Statistics Summary Cards */}
       <div className="admin-dashboard__stats">
         <StatCard
           title="Today's Total OPD Patients"
@@ -461,7 +496,7 @@ export default function AdminDashboardPage({ clinicId: propClinicId }: { clinicI
         />
       </div>
 
-      {/* 5. Live Patient Consultation Queue */}
+      {/* 6. Live Patient Consultation Queue */}
       <div className="admin-dashboard__live-queue">
         <CurrentTokenCard
           currentPatient={stats.current_patient}
@@ -478,10 +513,10 @@ export default function AdminDashboardPage({ clinicId: propClinicId }: { clinicI
         />
       </div>
 
-      {/* 6. Date-Wise Daily Booking Counter Bar */}
+      {/* 7. Date-Wise Daily Booking Counter Bar */}
       <div className="date-summary-box">
         <div className="date-summary-title">
-          <Calendar size={14} /> Quick Filter by Date • Daily Patient Counts:
+          <Calendar size={14} /> Quick Date Filter • Daily Patient Load (Today & Upcoming):
         </div>
         <div className="date-chips-scroll-bar">
           <button
@@ -491,8 +526,8 @@ export default function AdminDashboardPage({ clinicId: propClinicId }: { clinicI
             Show All Dates <span className="date-chip-count">{clinicFilteredAppointments.length}</span>
           </button>
 
-          {uniqueDatesList.map(dateStr => {
-            const count = dateCountsMap[dateStr];
+          {upcomingDatesList.map(dateStr => {
+            const count = dateCountsMap[dateStr] || 0;
             const isSelected = selectedDateFilter === dateStr;
 
             return (
@@ -509,7 +544,7 @@ export default function AdminDashboardPage({ clinicId: propClinicId }: { clinicI
         </div>
       </div>
 
-      {/* 7. Categorized Appointments Table */}
+      {/* 8. Categorized Appointments Table */}
       <AppointmentsTable
         appointments={finalFilteredAppointments}
         onAction={handleAppointmentAction}
