@@ -12,9 +12,6 @@ import {
   Image as ImageIcon,
   ShieldCheck,
   MapPin,
-  Calendar,
-  X,
-  CheckCircle2,
   AlertTriangle
 } from 'lucide-react';
 import './AdminHonorsMediaPage.css';
