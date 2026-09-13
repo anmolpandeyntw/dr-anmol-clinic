@@ -498,6 +498,17 @@ export default function AdminHonorsMediaPage() {
                 </div>
 
                 <div className="form-group">
+                  <label>Event Details / Story (20-50 words)</label>
+                  <textarea
+                    className="form-control"
+                    placeholder="Write 20-50 words about what happened, honor details, lecture summary, or OPD clinic updates..."
+                    value={gCaption}
+                    onChange={(e) => setGCaption(e.target.value)}
+                    rows={3}
+                  />
+                </div>
+
+                <div className="form-group">
                   <label>Year</label>
                   <input
                     type="text"
@@ -554,16 +565,6 @@ export default function AdminHonorsMediaPage() {
                       </div>
                     )}
                   </div>
-                </div>
-
-                <div className="form-group">
-                  <label>Description / Details Content</label>
-                  <textarea
-                    className="form-control"
-                    placeholder="Enter details about this event or honor..."
-                    value={gCaption}
-                    onChange={(e) => setGCaption(e.target.value)}
-                  />
                 </div>
               </div>
 
