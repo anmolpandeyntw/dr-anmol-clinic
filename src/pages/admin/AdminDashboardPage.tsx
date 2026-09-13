@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 import { useClinics } from '../../hooks/useClinics';
 import { StatCard } from '../../components/admin/StatCard';
@@ -8,7 +8,21 @@ import { NextPatientCard } from '../../components/admin/NextPatientCard';
 import { AppointmentsTable } from '../../components/admin/AppointmentsTable';
 import type { AppointmentRow } from '../../components/admin/AppointmentsTable';
 import { Button } from '../../components/common/Button';
-import { CalendarCheck, Users, Activity, CheckCircle, IndianRupee, ArrowRight, RefreshCw, XCircle, Calendar, Clock, MapPin, ShieldCheck, Wallet, Building2 } from 'lucide-react';
+import {
+  CalendarCheck,
+  Users,
+  Activity,
+  CheckCircle,
+  IndianRupee,
+  RefreshCw,
+  Calendar,
+  Clock,
+  MapPin,
+  Building2,
+  Sparkles,
+  Phone,
+  AlertCircle
+} from 'lucide-react';
 import './AdminDashboardPage.css';
 
 interface DashboardStats {
@@ -41,13 +55,15 @@ const INITIAL_STATS: DashboardStats = {
   next_patient: null,
 };
 
-export default function AdminDashboardPage({ clinicId }: { clinicId: string }) {
+export default function AdminDashboardPage({ clinicId: propClinicId }: { clinicId: string }) {
   const { clinics } = useClinics();
-  const [dateMode, setDateMode] = useState<'today' | 'tomorrow' | 'all' | 'custom'>('all');
+
+  // Internal clinic selection state (defaults to propClinicId or empty for 'All Clinics')
+  const [selectedClinicId, setSelectedClinicId] = useState<string>(propClinicId || '');
+  const [selectedDateFilter, setSelectedDateFilter] = useState<string>('all'); // 'all' or specific YYYY-MM-DD
   const [customDate, setCustomDate] = useState<string>(new Date().toISOString().split('T')[0]);
 
-  const [stats, setStats] = useState<DashboardStats>(INITIAL_STATS);
-  const [appointments, setAppointments] = useState<AppointmentRow[]>([]);
+  const [rawAppointments, setRawAppointments] = useState<AppointmentRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -57,14 +73,36 @@ export default function AdminDashboardPage({ clinicId }: { clinicId: string }) {
   tomorrowObj.setDate(tomorrowObj.getDate() + 1);
   const tomorrowStr = tomorrowObj.toISOString().split('T')[0];
 
-  const activeClinicInfo = clinicId ? clinics.find(c => c.id === clinicId) : null;
+  // Sync prop clinicId if header dropdown changes
+  useEffect(() => {
+    if (propClinicId !== undefined) {
+      setSelectedClinicId(propClinicId);
+    }
+  }, [propClinicId]);
 
+  // Helper to get exact clinic name from master clinic list
+  const getExactClinicName = useCallback((cId: string, fallbackName?: string) => {
+    if (cId && cId !== 'unassigned') {
+      const match = clinics.find(c => c.id === cId);
+      if (match) return match.name;
+    }
+    if (fallbackName && !fallbackName.includes('TO BE CONFIRMED') && !fallbackName.includes('Private Clinic')) {
+      return fallbackName;
+    }
+    // Match by Gomtinagar or Alambagh fallback
+    if (fallbackName?.toLowerCase().includes('gomti')) {
+      return clinics.find(c => c.name.toLowerCase().includes('gomti'))?.name || 'Dr. Anmol Pandey (Gomtinagar) Clinic';
+    }
+    if (fallbackName?.toLowerCase().includes('alam')) {
+      return clinics.find(c => c.name.toLowerCase().includes('alam'))?.name || 'Dr. Anmol Pandey (Alambag) Clinic';
+    }
+    return clinics[0]?.name || 'Dr. Anmol Pandey Clinic';
+  }, [clinics]);
+
+  // Fetch all appointments
   const fetchDashboardData = useCallback(async () => {
     setLoading(true);
     setErrorMsg(null);
-
-    const targetClinic = clinicId ? clinics.find(c => c.id === clinicId) : null;
-    const targetClinicName = targetClinic?.name;
 
     const saved = localStorage.getItem('saved_appointments_list');
     let localSaved: AppointmentRow[] | null = null;
@@ -72,41 +110,35 @@ export default function AdminDashboardPage({ clinicId }: { clinicId: string }) {
       try { localSaved = JSON.parse(saved); } catch { localSaved = null; }
     }
 
-    let formatted: AppointmentRow[] = [];
+    let fetched: AppointmentRow[] = [];
 
     if (isSupabaseConfigured) {
       try {
-        let query = supabase
+        const { data: aptsData, error } = await supabase
           .from('appointments')
           .select('*, clinics(name)')
           .order('schedule_date', { ascending: true });
 
-        if (dateMode === 'today') {
-          query = query.eq('schedule_date', todayStr);
-        } else if (dateMode === 'tomorrow') {
-          query = query.eq('schedule_date', tomorrowStr);
-        } else if (dateMode === 'custom' && customDate) {
-          query = query.eq('schedule_date', customDate);
-        }
-
-        const { data: aptsData, error } = await query;
         if (!error && aptsData && aptsData.length > 0) {
-          formatted = aptsData.map((row: any) => ({
-            id: row.id,
-            clinic_id: row.clinic_id || 'unassigned',
-            clinic_name: row.clinics?.name || targetClinicName || 'Dr. Anmol Pandey Private Clinic',
-            schedule_date: row.schedule_date,
-            patient_name: row.patient_name,
-            patient_mobile: row.patient_mobile,
-            patient_age: row.patient_age || 30,
-            patient_gender: row.patient_gender || 'male',
-            payment_method: row.payment_method || 'pay_at_clinic',
-            status: row.status || 'confirmed',
-            token_number: row.token_number || 1,
-            fee_amount: row.fee_amount || 600,
-            notes: row.notes,
-            created_at: row.created_at
-          }));
+          fetched = aptsData.map((row: any) => {
+            const resolvedClinicName = getExactClinicName(row.clinic_id, row.clinics?.name);
+            return {
+              id: row.id,
+              clinic_id: row.clinic_id || 'unassigned',
+              clinic_name: resolvedClinicName,
+              schedule_date: row.schedule_date,
+              patient_name: row.patient_name,
+              patient_mobile: row.patient_mobile,
+              patient_age: row.patient_age || 30,
+              patient_gender: row.patient_gender || 'male',
+              payment_method: row.payment_method || 'pay_at_clinic',
+              status: row.status || 'confirmed',
+              token_number: row.token_number || 1,
+              fee_amount: row.fee_amount || 600,
+              notes: row.notes,
+              created_at: row.created_at
+            };
+          });
         }
       } catch (e) {
         console.warn('Dashboard Supabase fetch note:', e);
@@ -114,350 +146,390 @@ export default function AdminDashboardPage({ clinicId }: { clinicId: string }) {
     }
 
     if (localSaved && localSaved.length > 0) {
-      if (formatted.length > 0) {
-        formatted = formatted.map(dbr => {
+      if (fetched.length > 0) {
+        fetched = fetched.map(dbr => {
           const match = localSaved!.find(ls => ls.id === dbr.id);
-          return match ? { ...dbr, status: match.status } : dbr;
+          const resolvedClinicName = getExactClinicName(dbr.clinic_id, dbr.clinic_name);
+          return match
+            ? { ...dbr, status: match.status, clinic_name: resolvedClinicName }
+            : { ...dbr, clinic_name: resolvedClinicName };
         });
       } else {
-        formatted = [...localSaved];
-        if (dateMode === 'today') {
-          formatted = formatted.filter(a => a.schedule_date === todayStr);
-        } else if (dateMode === 'tomorrow') {
-          formatted = formatted.filter(a => a.schedule_date === tomorrowStr);
-        } else if (dateMode === 'custom' && customDate) {
-          formatted = formatted.filter(a => a.schedule_date === customDate);
-        }
+        fetched = localSaved.map(ls => ({
+          ...ls,
+          clinic_name: getExactClinicName(ls.clinic_id, ls.clinic_name)
+        }));
       }
     }
 
-    // Clinic Filter
-    if (clinicId && targetClinicName) {
-      formatted = formatted.filter(a => {
-        if (!a.clinic_id || a.clinic_id === 'unassigned') return true;
-        if (a.clinic_id === clinicId) return true;
-        const lowAptName = (a.clinic_name || '').toLowerCase();
-        const lowTargetName = targetClinicName.toLowerCase();
-        if (lowTargetName.includes('gomti') && lowAptName.includes('gomti')) return true;
-        if (lowTargetName.includes('vikas') && lowAptName.includes('vikas')) return true;
-        if (lowTargetName.includes('alam') && lowAptName.includes('alam')) return true;
-        return lowAptName.includes(lowTargetName);
-      });
-    }
+    setRawAppointments(fetched);
+    setLoading(false);
+  }, [getExactClinicName]);
 
-    // Strict Date-Wise Sort: Today first, then chronological
-    formatted.sort((a, b) => {
-      const aIsToday = a.schedule_date === todayStr;
-      const bIsToday = b.schedule_date === todayStr;
-      if (aIsToday && !bIsToday) return -1;
-      if (!aIsToday && bIsToday) return 1;
+  useEffect(() => {
+    fetchDashboardData();
+  }, [fetchDashboardData]);
 
-      const aIsFuture = a.schedule_date > todayStr;
-      const bIsFuture = b.schedule_date > todayStr;
-      if (aIsFuture && !bIsFuture) return -1;
-      if (!aIsFuture && bIsFuture) return 1;
+  // Active Clinic Info for Banner
+  const activeClinicObj = useMemo(() => {
+    if (!selectedClinicId) return null;
+    return clinics.find(c => c.id === selectedClinicId) || null;
+  }, [clinics, selectedClinicId]);
 
-      if (a.schedule_date !== b.schedule_date) {
-        return a.schedule_date.localeCompare(b.schedule_date);
+  // Filter appointments by selected clinic
+  const clinicFilteredAppointments = useMemo(() => {
+    if (!selectedClinicId) return rawAppointments;
+    return rawAppointments.filter(apt => {
+      if (apt.clinic_id === selectedClinicId) return true;
+      if (activeClinicObj) {
+        const aptNameLow = (apt.clinic_name || '').toLowerCase();
+        const activeNameLow = activeClinicObj.name.toLowerCase();
+        if (activeNameLow.includes('gomti') && aptNameLow.includes('gomti')) return true;
+        if (activeNameLow.includes('alam') && aptNameLow.includes('alam')) return true;
       }
-      return (a.token_number || 0) - (b.token_number || 0);
+      return false;
     });
+  }, [rawAppointments, selectedClinicId, activeClinicObj]);
 
-    const total = formatted.length;
-    const in_progress = formatted.filter(a => a.status === 'in_progress').length;
-    const checked_in = formatted.filter(a => a.status === 'checked_in').length;
-    const confirmed = formatted.filter(a => a.status === 'confirmed').length;
-    const completed = formatted.filter(a => a.status === 'completed' || a.status === 'checked_in' || a.status === 'in_progress').length;
-    const pending = formatted.filter(a => a.status === 'pending').length;
+  // Compute total counts per clinic for clinic selector cards
+  const clinicCountsMap = useMemo(() => {
+    const map: Record<string, number> = {};
+    rawAppointments.forEach(apt => {
+      if (apt.clinic_id) {
+        map[apt.clinic_id] = (map[apt.clinic_id] || 0) + 1;
+      }
+    });
+    return map;
+  }, [rawAppointments]);
 
-    // Financial Revenue
-    const verified_revenue = formatted.reduce((acc, a) => {
+  // Date-wise booking counter map for daily date bar
+  const dateCountsMap = useMemo(() => {
+    const map: Record<string, number> = {};
+    clinicFilteredAppointments.forEach(apt => {
+      if (apt.schedule_date) {
+        map[apt.schedule_date] = (map[apt.schedule_date] || 0) + 1;
+      }
+    });
+    return map;
+  }, [clinicFilteredAppointments]);
+
+  // Sorted list of unique upcoming dates for date counter bar
+  const uniqueDatesList = useMemo(() => {
+    const dates = Object.keys(dateCountsMap).sort((a, b) => a.localeCompare(b));
+    return dates;
+  }, [dateCountsMap]);
+
+  // Apply Date Filter to appointments list
+  const finalFilteredAppointments = useMemo(() => {
+    if (selectedDateFilter === 'all') return clinicFilteredAppointments;
+    if (selectedDateFilter === 'custom') {
+      return clinicFilteredAppointments.filter(apt => apt.schedule_date === customDate);
+    }
+    return clinicFilteredAppointments.filter(apt => apt.schedule_date === selectedDateFilter);
+  }, [clinicFilteredAppointments, selectedDateFilter, customDate]);
+
+  // Compute Dashboard Stats
+  const stats: DashboardStats = useMemo(() => {
+    const total = clinicFilteredAppointments.length;
+    const todayApts = clinicFilteredAppointments.filter(a => a.schedule_date === todayStr);
+
+    const in_progress = todayApts.filter(a => a.status === 'in_progress').length;
+    const checked_in = todayApts.filter(a => a.status === 'checked_in').length;
+    const confirmed = todayApts.filter(a => a.status === 'confirmed').length;
+    const completed = todayApts.filter(a => a.status === 'completed' || a.status === 'checked_in' || a.status === 'in_progress').length;
+    const pending = todayApts.filter(a => a.status === 'pending').length;
+    const cancelled = todayApts.filter(a => a.status === 'cancelled').length;
+    const no_show = todayApts.filter(a => a.status === 'no_show').length;
+
+    // Financial calculations
+    const verified_revenue = clinicFilteredAppointments.reduce((acc, a) => {
       const fee = a.fee_amount || 600;
       const isOnlinePaid = a.payment_method === 'pay_online';
       const hasVisited = a.status === 'completed' || a.status === 'checked_in' || a.status === 'in_progress';
-      if (isOnlinePaid || hasVisited) {
-        return acc + fee;
-      }
-      return acc;
+      return (isOnlinePaid || hasVisited) ? acc + fee : acc;
     }, 0);
 
-    const pending_cash = formatted.reduce((acc, a) => {
+    const pending_cash = clinicFilteredAppointments.reduce((acc, a) => {
       const fee = a.fee_amount || 600;
-      const isClinicPay = a.payment_method !== 'pay_online';
-      const notVisitedYet = a.status === 'pending' || a.status === 'confirmed';
-      if (isClinicPay && notVisitedYet) {
-        return acc + fee;
-      }
-      return acc;
+      const isPayAtClinic = a.payment_method === 'pay_at_clinic';
+      const isUnvisited = a.status !== 'completed' && a.status !== 'checked_in' && a.status !== 'in_progress' && a.status !== 'cancelled';
+      return (isPayAtClinic && isUnvisited) ? acc + fee : acc;
     }, 0);
 
-    const curr = formatted.find(a => a.status === 'in_progress');
-    const nxt = formatted.find(a => a.status === 'checked_in' || a.status === 'confirmed');
+    // Current & Next patient for live queue
+    const currentApt = todayApts.find(a => a.status === 'in_progress' || a.status === 'checked_in') || null;
+    const nextApt = todayApts.find(a => a.id !== currentApt?.id && (a.status === 'confirmed' || a.status === 'pending')) || null;
 
-    setAppointments(formatted);
-    setStats({
+    return {
       total,
       pending,
       confirmed,
       checked_in,
       in_progress,
       completed,
-      cancelled: formatted.filter(a => a.status === 'cancelled').length,
-      no_show: formatted.filter(a => a.status === 'no_show').length,
+      cancelled,
+      no_show,
       verified_revenue,
       pending_cash,
-      current_patient: curr ? {
-        id: curr.id,
-        token_number: curr.token_number || 1,
-        patient_name: curr.patient_name,
-        patient_mobile: curr.patient_mobile,
-        patient_age: curr.patient_age,
-        patient_gender: curr.patient_gender as any,
-        clinic_id: curr.clinic_id,
-        status: curr.status as any
+      current_patient: currentApt ? {
+        token_number: currentApt.token_number || 1,
+        patient_name: currentApt.patient_name,
+        patient_mobile: currentApt.patient_mobile,
+        reason_for_visit: currentApt.notes || 'Nephrology Consultation',
+        status: currentApt.status
       } : null,
-      next_patient: nxt ? {
-        id: nxt.id,
-        token_number: nxt.token_number || 1,
-        patient_name: nxt.patient_name,
-        patient_mobile: nxt.patient_mobile,
-        patient_age: nxt.patient_age,
-        patient_gender: nxt.patient_gender as any,
-        clinic_id: nxt.clinic_id,
-        status: nxt.status as any
+      next_patient: nextApt ? {
+        token_number: nextApt.token_number || 2,
+        patient_name: nextApt.patient_name,
+        patient_mobile: nextApt.patient_mobile,
+        reason_for_visit: nextApt.notes || 'Nephrology Consultation',
+        status: nextApt.status
       } : null
-    });
-    setLoading(false);
-  }, [clinicId, clinics, dateMode, customDate, todayStr, tomorrowStr]);
+    };
+  }, [clinicFilteredAppointments, todayStr]);
 
-  useEffect(() => {
-    fetchDashboardData();
-
-    const handleUpdate = () => fetchDashboardData();
-    window.addEventListener('appointments_updated', handleUpdate);
-    return () => window.removeEventListener('appointments_updated', handleUpdate);
-  }, [fetchDashboardData]);
-
-  const handleQueueAction = async (appointmentId: string, action: string) => {
+  // Action Handler for Appointments Table
+  const handleAppointmentAction = async (appointmentId: string, action: string) => {
     setActionLoading(true);
-    setErrorMsg(null);
 
-    let targetStatus = 'completed';
-    if (action === 'cancel') targetStatus = 'cancelled';
-    if (action === 'confirm') targetStatus = 'confirmed';
-
-    // Update state and localStorage
-    const saved = localStorage.getItem('saved_appointments_list');
-    if (saved) {
-      try {
-        let fullList: AppointmentRow[] = JSON.parse(saved);
-        if (action === 'delete') {
-          fullList = fullList.filter(a => a.id !== appointmentId);
-        } else {
-          fullList = fullList.map(a => a.id === appointmentId ? { ...a, status: targetStatus as any } : a);
+    const updatedList = rawAppointments.map(apt => {
+      if (apt.id === appointmentId) {
+        if (action === 'complete_consultation') {
+          return { ...apt, status: 'completed' as const };
         }
-        localStorage.setItem('saved_appointments_list', JSON.stringify(fullList));
-      } catch {}
-    }
+        if (action === 'call_patient') {
+          return { ...apt, status: 'in_progress' as const };
+        }
+      }
+      return apt;
+    }).filter(apt => !(action === 'delete' && apt.id === appointmentId));
 
-    setAppointments(prev => {
-      if (action === 'delete') return prev.filter(a => a.id !== appointmentId);
-      return prev.map(a => a.id === appointmentId ? { ...a, status: targetStatus as any } : a);
-    });
-
-    window.dispatchEvent(new Event('appointments_updated'));
+    setRawAppointments(updatedList);
+    localStorage.setItem('saved_appointments_list', JSON.stringify(updatedList));
 
     if (isSupabaseConfigured) {
       try {
         if (action === 'delete') {
           await supabase.from('appointments').delete().eq('id', appointmentId);
-        } else {
-          await supabase
-            .from('appointments')
-            .update({ status: targetStatus, updated_at: new Date().toISOString() })
-            .eq('id', appointmentId);
+        } else if (action === 'complete_consultation') {
+          await supabase.from('appointments').update({ status: 'completed' }).eq('id', appointmentId);
+        } else if (action === 'call_patient') {
+          await supabase.from('appointments').update({ status: 'in_progress' }).eq('id', appointmentId);
         }
-      } catch (e) {
-        console.warn('Queue action note:', e);
+      } catch (err) {
+        console.warn('Supabase action update note:', err);
       }
     }
 
     setActionLoading(false);
-    fetchDashboardData();
   };
 
-  const handleCallNext = async () => {
-    setActionLoading(true);
-    setErrorMsg(null);
-
-    if (stats.next_patient) {
-      await handleQueueAction(stats.next_patient.id, 'complete_consultation');
-    } else {
-      setErrorMsg('No waiting patients in queue for today.');
+  const handleFormatDateDisplay = (dateStr: string) => {
+    if (dateStr === todayStr) return 'Today';
+    if (dateStr === tomorrowStr) return 'Tomorrow';
+    try {
+      const d = new Date(dateStr);
+      return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+    } catch {
+      return dateStr;
     }
-    setActionLoading(false);
   };
 
   return (
     <div className="admin-dashboard">
-      {/* Sleek Active Clinic Banner */}
-      <div className="active-clinic-strip">
-        <div className="strip-left">
-          <div className="strip-badge">
-            <Building2 size={13} /> {activeClinicInfo ? activeClinicInfo.name : 'All Clinic Locations'}
+      {/* 1. Interactive Clinic Selector Cards Bar */}
+      <div className="clinic-selector-cards-strip">
+        <div
+          className={`clinic-card-chip ${selectedClinicId === '' ? 'active' : ''}`}
+          onClick={() => setSelectedClinicId('')}
+        >
+          <div className="clinic-chip-icon">
+            <Building2 size={18} />
           </div>
-          {activeClinicInfo && (
-            <span className="strip-address"><MapPin size={13} /> {activeClinicInfo.address}</span>
-          )}
+          <div className="clinic-chip-info">
+            <span className="clinic-chip-name">🏥 All Clinics</span>
+            <span className="clinic-chip-sub">Combined Overview</span>
+          </div>
+          <span className="clinic-chip-count-badge">{rawAppointments.length}</span>
         </div>
 
-        {activeClinicInfo && (
-          <div className="strip-right">
-            <span className="strip-time"><Clock size={13} /> {activeClinicInfo.operating_hours || 'OPD Session Hours'}</span>
-            <span className="strip-fee"><IndianRupee size={13} /> ₹{activeClinicInfo.consultation_fee || 600} Fee</span>
-          </div>
-        )}
+        {clinics.map((clinic) => {
+          const count = clinicCountsMap[clinic.id] || rawAppointments.filter(a => {
+            const aName = (a.clinic_name || '').toLowerCase();
+            const cName = clinic.name.toLowerCase();
+            return (cName.includes('gomti') && aName.includes('gomti')) || (cName.includes('alam') && aName.includes('alam'));
+          }).length;
+
+          const isSelected = selectedClinicId === clinic.id;
+
+          return (
+            <div
+              key={clinic.id}
+              className={`clinic-card-chip ${isSelected ? 'active' : ''}`}
+              onClick={() => setSelectedClinicId(clinic.id)}
+            >
+              <div className="clinic-chip-icon">
+                <MapPin size={18} />
+              </div>
+              <div className="clinic-chip-info">
+                <span className="clinic-chip-name">{clinic.name}</span>
+                <span className="clinic-chip-sub">{clinic.address || 'Lucknow'}</span>
+              </div>
+              <span className="clinic-chip-count-badge">{count}</span>
+            </div>
+          );
+        })}
       </div>
 
-      {/* Main Header Bar */}
+      {/* 2. Clinic Greeting & Status Banner */}
+      <div className="clinic-greeting-card">
+        <div className="greeting-left">
+          <div className="greeting-icon-wrapper">
+            <Building2 size={26} />
+          </div>
+          <div>
+            <h2 className="greeting-title">
+              🏥 Welcome to {activeClinicObj ? activeClinicObj.name : 'All Clinics Combined Portal'}
+            </h2>
+            <p className="greeting-sub">
+              <span className="greeting-meta-item">
+                <MapPin size={13} /> {activeClinicObj ? activeClinicObj.address : 'Multiple Locations across Lucknow'}
+              </span>
+              <span>•</span>
+              <span className="greeting-meta-item">
+                <Clock size={13} /> {activeClinicObj ? activeClinicObj.operating_hours : 'OPD Operating Hours'}
+              </span>
+            </p>
+          </div>
+        </div>
+
+        <div className="greeting-right-badge">
+          <Sparkles size={15} />
+          <span>{stats.total} Total Booked Patients</span>
+        </div>
+      </div>
+
+      {/* 3. Dashboard Header & Refresh Action */}
       <div className="admin-dashboard__header">
         <div>
-          <h1>Doctor's Daily OPD Dashboard</h1>
+          <h1>Clinic Dashboard</h1>
           <p className="admin-dashboard__date">
-            Showing queue for: <strong className="highlight-date">{dateMode === 'today' ? `Today (${todayStr})` : dateMode === 'tomorrow' ? `Tomorrow (${tomorrowStr})` : dateMode === 'custom' ? customDate : 'All Dates (Date-Wise)'}</strong>
+            Real-time OPD Queue & Patient Management • {new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
           </p>
         </div>
 
         <div className="admin-dashboard__actions">
-          {/* Quick Date Selector */}
-          <div className="dashboard-filter-bar">
-            <div className="filter-select-wrapper">
-              <Calendar size={15} className="filter-icon" />
-              <select
-                className="date-mode-select"
-                value={dateMode}
-                onChange={(e) => setDateMode(e.target.value as any)}
-              >
-                <option value="all">All Dates (Date-Wise)</option>
-                <option value="today">Today's Queue ({todayStr})</option>
-                <option value="tomorrow">Tomorrow ({tomorrowStr})</option>
-                <option value="custom">Select Specific Date</option>
-              </select>
-            </div>
-
-            {dateMode === 'custom' && (
-              <div className="date-picker-wrapper">
-                <input
-                  type="date"
-                  value={customDate}
-                  onChange={(e) => setCustomDate(e.target.value)}
-                />
-              </div>
-            )}
-          </div>
-
           <Button
-            variant="primary"
-            size="lg"
-            loading={actionLoading}
-            icon={<ArrowRight size={20} />}
-            onClick={handleCallNext}
-          >
-            CALL NEXT PATIENT
-          </Button>
-
-          <Button
-            variant="ghost"
+            variant="outline"
             size="sm"
             onClick={fetchDashboardData}
-            icon={<RefreshCw size={16} />}
+            loading={loading}
+            icon={<RefreshCw size={14} />}
           >
-            Refresh
+            Refresh Records
           </Button>
         </div>
       </div>
 
       {errorMsg && (
         <div className="admin-dashboard__error">
-          <XCircle size={18} />
+          <AlertCircle size={18} />
           <span>{errorMsg}</span>
         </div>
       )}
 
-      {/* Verified Financial & Patient Metrics */}
-      <div className="admin-dashboard__metrics">
+      {/* 4. Statistics Summary Cards */}
+      <div className="admin-dashboard__stats">
         <StatCard
-          title="Total Scheduled"
+          title="Today's Total OPD Patients"
+          value={stats.completed + stats.confirmed + stats.pending}
+          change={`${stats.completed} Checked In / Done`}
+          changeType="positive"
+          icon={<Users size={22} />}
+        />
+        <StatCard
+          title="Verified Revenue"
+          value={`₹${stats.verified_revenue.toLocaleString('en-IN')}`}
+          change="Paid Online & Clinic Counter"
+          changeType="positive"
+          icon={<IndianRupee size={22} />}
+        />
+        <StatCard
+          title="Pending Cash to Collect"
+          value={`₹${stats.pending_cash.toLocaleString('en-IN')}`}
+          change="Uncollected Counter Fees"
+          changeType="neutral"
+          icon={<Activity size={22} />}
+        />
+        <StatCard
+          title="Total Active Bookings"
           value={stats.total}
-          icon={<CalendarCheck size={20} />}
-          variant="primary"
-        />
-        <StatCard
-          title="In Consultation"
-          value={stats.in_progress}
-          icon={<Activity size={20} />}
-          variant="warning"
-        />
-        <StatCard
-          title="Waiting / Arrived"
-          value={stats.checked_in + stats.confirmed}
-          icon={<Users size={20} />}
-          variant="primary"
-        />
-        <StatCard
-          title="Verified Visited"
-          value={stats.completed}
-          icon={<CheckCircle size={20} />}
-          variant="success"
-        />
-        <StatCard
-          title="Collected Revenue"
-          value={`₹${stats.verified_revenue}`}
-          icon={<ShieldCheck size={20} />}
-          variant="success"
-        />
-        <StatCard
-          title="Pending Clinic Cash"
-          value={`₹${stats.pending_cash}`}
-          icon={<Wallet size={20} />}
-          variant="warning"
+          change="All Upcoming & Past Dates"
+          changeType="positive"
+          icon={<CalendarCheck size={22} />}
         />
       </div>
 
-      {/* Focus Cards Row */}
-      <div className="admin-dashboard__focus-grid">
-        <div className="focus-grid__current">
-          <CurrentTokenCard
-            currentPatient={stats.current_patient}
-            onComplete={(id) => handleQueueAction(id, 'complete_consultation')}
-            loading={actionLoading}
-          />
-        </div>
+      {/* 5. Live Patient Consultation Queue */}
+      <div className="admin-dashboard__live-queue">
+        <CurrentTokenCard
+          patient={stats.current_patient}
+          onComplete={() => {
+            const activeId = clinicFilteredAppointments.find(a => a.status === 'in_progress' || a.status === 'checked_in')?.id;
+            if (activeId) handleAppointmentAction(activeId, 'complete_consultation');
+          }}
+          loading={actionLoading}
+        />
 
-        <div className="focus-grid__next">
-          <NextPatientCard
-            nextPatient={stats.next_patient}
-            onCallNext={handleCallNext}
-            loading={actionLoading}
-          />
-        </div>
-      </div>
-
-      {/* Table Section */}
-      <div className="admin-dashboard__table-section">
-        <div className="section-header">
-          <h2>
-            {dateMode === 'today' ? "Today's Patient Queue" : dateMode === 'tomorrow' ? "Tomorrow's Patient Queue" : "All Scheduled Patient Bookings (Date-Wise)"}
-            {activeClinicInfo ? ` • ${activeClinicInfo.name}` : ''}
-          </h2>
-        </div>
-
-        <AppointmentsTable
-          appointments={appointments}
-          onAction={handleQueueAction}
-          loading={loading || actionLoading}
+        <NextPatientCard
+          patient={stats.next_patient}
+          onCallNext={() => {
+            if (stats.next_patient) {
+              const match = clinicFilteredAppointments.find(a => a.patient_name === stats.next_patient?.patient_name);
+              if (match) handleAppointmentAction(match.id, 'call_patient');
+            }
+          }}
+          loading={actionLoading}
         />
       </div>
+
+      {/* 6. Date-Wise Daily Booking Counter Bar */}
+      <div className="date-summary-box">
+        <div className="date-summary-title">
+          <Calendar size={14} /> Quick Filter by Date • Daily Patient Counts:
+        </div>
+        <div className="date-chips-scroll-bar">
+          <button
+            className={`date-chip-btn ${selectedDateFilter === 'all' ? 'active' : ''}`}
+            onClick={() => setSelectedDateFilter('all')}
+          >
+            Show All Dates <span className="date-chip-count">{clinicFilteredAppointments.length}</span>
+          </button>
+
+          {uniqueDatesList.map(dateStr => {
+            const count = dateCountsMap[dateStr];
+            const isSelected = selectedDateFilter === dateStr;
+
+            return (
+              <button
+                key={dateStr}
+                className={`date-chip-btn ${isSelected ? 'active' : ''}`}
+                onClick={() => setSelectedDateFilter(dateStr)}
+              >
+                {handleFormatDateDisplay(dateStr)} ({dateStr})
+                <span className="date-chip-count">{count}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* 7. Categorized Appointments Table */}
+      <AppointmentsTable
+        appointments={finalFilteredAppointments}
+        onAction={handleAppointmentAction}
+        loading={loading || actionLoading}
+      />
     </div>
   );
 }
