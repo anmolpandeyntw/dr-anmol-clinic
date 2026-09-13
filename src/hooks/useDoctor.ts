@@ -54,10 +54,13 @@ export function useDoctor() {
         if (err) setError(err.message);
       } else {
         const docFromDb = data[0] as Doctor;
-        // Global Single Source of Truth: Database data takes priority over local browser storage
         setDoctor({
           ...defaultBase,
-          ...docFromDb
+          ...docFromDb,
+          qualifications: (docFromDb.qualifications && docFromDb.qualifications.length > 0) ? docFromDb.qualifications : (localOverride?.qualifications || defaultBase.qualifications),
+          experience: (docFromDb.experience && docFromDb.experience.length > 0) ? docFromDb.experience : (localOverride?.experience || defaultBase.experience),
+          memberships: (docFromDb.memberships && docFromDb.memberships.length > 0) ? docFromDb.memberships : (localOverride?.memberships || defaultBase.memberships),
+          publications: (docFromDb.publications && docFromDb.publications.length > 0) ? docFromDb.publications : (localOverride?.publications || defaultBase.publications),
         });
       }
     } catch (e) {

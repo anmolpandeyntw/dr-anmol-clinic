@@ -1,5 +1,6 @@
 import { useDoctor } from '../hooks/useDoctor';
 import { useSpecializations } from '../hooks/useSpecializations';
+import { MOCK_DOCTOR } from '../lib/mockData';
 import { FullPageLoader } from '../components/common/LoadingSpinner';
 import { Button } from '../components/common/Button';
 import { GraduationCap, Briefcase, Award, BookOpen, Stethoscope, ShieldCheck, CalendarCheck, Phone, CheckCircle2, ExternalLink } from 'lucide-react';
@@ -14,6 +15,10 @@ export default function DoctorProfilePage() {
   if (!doctor) return <div className="container section">Doctor profile not found.</div>;
 
   const doctorPhoto = doctor.photo_url || '/images/doctor_portrait.jpg';
+  const qualifications = (doctor.qualifications && doctor.qualifications.length > 0) ? doctor.qualifications : MOCK_DOCTOR.qualifications;
+  const experience = (doctor.experience && doctor.experience.length > 0) ? doctor.experience : MOCK_DOCTOR.experience;
+  const memberships = (doctor.memberships && doctor.memberships.length > 0) ? doctor.memberships : MOCK_DOCTOR.memberships;
+  const publications = (doctor.publications && doctor.publications.length > 0) ? doctor.publications : MOCK_DOCTOR.publications;
 
   return (
     <div className="about-doctor-page">
@@ -105,7 +110,7 @@ export default function DoctorProfilePage() {
       {/* Main Content Sections */}
       <div className="container about-body-container">
         {/* Education Timeline */}
-        {doctor.qualifications && doctor.qualifications.length > 0 && (
+        {qualifications && qualifications.length > 0 && (
           <section className="about-section-card">
             <div className="about-sec-header">
               <div className="sec-icon-circle">
@@ -118,7 +123,7 @@ export default function DoctorProfilePage() {
             </div>
 
             <div className="about-timeline">
-              {doctor.qualifications.map((q, i) => (
+              {qualifications.map((q, i) => (
                 <div key={i} className="timeline-card">
                   <div className="timeline-dot" />
                   <div className="timeline-content">
@@ -133,7 +138,7 @@ export default function DoctorProfilePage() {
         )}
 
         {/* Experience Timeline */}
-        {doctor.experience && doctor.experience.length > 0 && (
+        {experience && experience.length > 0 && (
           <section className="about-section-card">
             <div className="about-sec-header">
               <div className="sec-icon-circle sec-icon-circle--blue">
@@ -146,7 +151,7 @@ export default function DoctorProfilePage() {
             </div>
 
             <div className="about-timeline">
-              {doctor.experience.map((e, i) => (
+              {experience.map((e, i) => (
                 <div key={i} className={`timeline-card ${e.current ? 'timeline-card--current' : ''}`}>
                   <div className="timeline-dot" />
                   <div className="timeline-content">
@@ -189,7 +194,7 @@ export default function DoctorProfilePage() {
         {/* Memberships & Publications Grid */}
         <div className="about-two-col-grid">
           {/* Memberships */}
-          {doctor.memberships && doctor.memberships.length > 0 && (
+          {memberships && memberships.length > 0 && (
             <section className="about-section-card flex-1">
               <div className="about-sec-header">
                 <div className="sec-icon-circle sec-icon-circle--gold">
@@ -202,7 +207,7 @@ export default function DoctorProfilePage() {
               </div>
 
               <ul className="memberships-list">
-                {doctor.memberships.map((m, i) => (
+                {memberships.map((m, i) => (
                   <li key={i}>
                     <CheckCircle2 size={16} className="m-icon" />
                     <span>{m}</span>
@@ -213,7 +218,7 @@ export default function DoctorProfilePage() {
           )}
 
           {/* Publications */}
-          {doctor.publications && doctor.publications.length > 0 && (
+          {publications && publications.length > 0 && (
             <section className="about-section-card flex-1">
               <div className="about-sec-header">
                 <div className="sec-icon-circle sec-icon-circle--purple">
@@ -226,7 +231,7 @@ export default function DoctorProfilePage() {
               </div>
 
               <div className="publications-list-wrapper">
-                {doctor.publications.map((p, i) => {
+                {publications.map((p, i) => {
                   const doiMap: Record<number, string> = {
                     0: '10.4103/ijot.ijot_45_21',
                     1: '10.1177/0391398821100234',
