@@ -10,8 +10,6 @@ import {
   RefreshCw,
   Building2,
   MapPin,
-  Clock,
-  Sparkles,
   AlertCircle
 } from 'lucide-react';
 import './AdminAppointmentsPage.css';
@@ -137,11 +135,7 @@ export default function AdminAppointmentsPage({ clinicId: propClinicId }: AdminA
     fetchAppointments();
   }, [fetchAppointments]);
 
-  // Selected Clinic Object
-  const activeClinicObj = useMemo(() => {
-    if (!selectedClinicId) return null;
-    return clinics.find(c => c.id === selectedClinicId) || null;
-  }, [clinics, selectedClinicId]);
+
 
   // Dynamic Filter appointments by selected clinic
   const clinicFilteredAppointments = useMemo(() => {
@@ -259,70 +253,37 @@ export default function AdminAppointmentsPage({ clinicId: propClinicId }: AdminA
 
   return (
     <div className="admin-appointments-page">
-      {/* 1. Interactive Private Clinic Selector Cards Bar (Hospitals excluded) */}
-      <div className="clinic-selector-cards-strip">
-        <div
-          className={`clinic-card-chip ${selectedClinicId === '' ? 'active' : ''}`}
-          onClick={() => setSelectedClinicId('')}
-        >
-          <div className="clinic-chip-icon">
-            <Building2 size={18} />
-          </div>
-          <div className="clinic-chip-info">
-            <span className="clinic-chip-name">🏥 All Private Clinics</span>
-            <span className="clinic-chip-sub">Combined Bookings View</span>
-          </div>
-          <span className="clinic-chip-count-badge">{rawAppointments.length}</span>
-        </div>
+      {/* 1. Super Simple & Intuitive Clinic Switcher Tabs */}
+      <div className="simple-clinic-tabs-bar">
+        <span className="clinic-switcher-label">Select Clinic Location:</span>
+        <div className="clinic-pills-row">
+          <button
+            type="button"
+            className={`clinic-pill-tab ${selectedClinicId === '' ? 'active' : ''}`}
+            onClick={() => setSelectedClinicId('')}
+          >
+            <Building2 size={16} />
+            <span>All Private Clinics</span>
+            <span className="pill-badge">{rawAppointments.length}</span>
+          </button>
 
-        {privateClinicsOnly.map((clinic) => {
-          const count = clinicCountsMap[clinic.id] || 0;
-          const isSelected = selectedClinicId === clinic.id;
+          {privateClinicsOnly.map((clinic) => {
+            const count = clinicCountsMap[clinic.id] || 0;
+            const isSelected = selectedClinicId === clinic.id;
 
-          return (
-            <div
-              key={clinic.id}
-              className={`clinic-card-chip ${isSelected ? 'active' : ''}`}
-              onClick={() => setSelectedClinicId(clinic.id)}
-            >
-              <div className="clinic-chip-icon">
-                <MapPin size={18} />
-              </div>
-              <div className="clinic-chip-info">
-                <span className="clinic-chip-name">{clinic.name}</span>
-                <span className="clinic-chip-sub">{clinic.address || 'Lucknow'}</span>
-              </div>
-              <span className="clinic-chip-count-badge">{count}</span>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* 2. Clinic Greeting Banner */}
-      <div className="clinic-greeting-card">
-        <div className="greeting-left">
-          <div className="greeting-icon-wrapper">
-            <Building2 size={26} />
-          </div>
-          <div>
-            <h2 className="greeting-title">
-              🏥 {activeClinicObj ? activeClinicObj.name : 'All Private Clinics'} Appointments
-            </h2>
-            <p className="greeting-sub">
-              <span className="greeting-meta-item">
-                <MapPin size={13} /> {activeClinicObj ? activeClinicObj.address : 'Lucknow Private Clinics'}
-              </span>
-              <span>•</span>
-              <span className="greeting-meta-item">
-                <Clock size={13} /> {activeClinicObj ? activeClinicObj.operating_hours || 'OPD Hours' : 'OPD Timings'}
-              </span>
-            </p>
-          </div>
-        </div>
-
-        <div className="greeting-right-badge">
-          <Sparkles size={15} />
-          <span>{clinicFilteredAppointments.length} Patient Records</span>
+            return (
+              <button
+                key={clinic.id}
+                type="button"
+                className={`clinic-pill-tab ${isSelected ? 'active' : ''}`}
+                onClick={() => setSelectedClinicId(clinic.id)}
+              >
+                <MapPin size={16} />
+                <span>{clinic.name}</span>
+                <span className="pill-badge">{count}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 

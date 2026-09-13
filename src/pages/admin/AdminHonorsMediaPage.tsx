@@ -12,7 +12,8 @@ import {
   Image as ImageIcon,
   ShieldCheck,
   MapPin,
-  AlertTriangle
+  AlertTriangle,
+  X
 } from 'lucide-react';
 import './AdminHonorsMediaPage.css';
 
@@ -120,14 +121,17 @@ export default function AdminHonorsMediaPage() {
   // Save Milestone submit handler
   const handleSaveMilestoneSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!mStat.trim() || !mTitle.trim() || !mSub.trim()) return;
+    if (!mTitle.trim()) {
+      alert('Please enter a title for this honor badge.');
+      return;
+    }
 
     setSaving(true);
     await saveMilestone({
       id: editingMilestone?.id,
-      stat: mStat.trim(),
+      stat: mStat.trim() || 'HONOR BADGE',
       title: mTitle.trim(),
-      sub: mSub.trim(),
+      sub: mSub.trim() || 'Academic & Clinical Distinction',
       image_url: mImgUrl || '/images/gold_medal_badge.jpg'
     });
     setSaving(false);
@@ -137,17 +141,20 @@ export default function AdminHonorsMediaPage() {
   // Save Gallery Item submit handler
   const handleSaveGallerySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!gTitle.trim() || !gLocation.trim() || !gCaption.trim()) return;
+    if (!gTitle.trim()) {
+      alert('Please enter a post title.');
+      return;
+    }
 
     setSaving(true);
     await saveGalleryItem({
       id: editingGallery?.id,
       category: gCategory,
       title: gTitle.trim(),
-      location: gLocation.trim(),
-      year: gYear.trim() || '2025',
+      location: gLocation.trim() || 'Lucknow Clinic',
+      year: gYear.trim() || new Date().getFullYear().toString(),
       imageUrl: gImgUrl || '/images/doctor_portrait.jpg',
-      caption: gCaption.trim()
+      caption: gCaption.trim() || gTitle.trim()
     });
     setSaving(false);
     setShowGalleryModal(false);
@@ -273,18 +280,18 @@ export default function AdminHonorsMediaPage() {
 
                 <div className="g-admin-footer">
                   <button
-                    className="icon-btn-edit"
-                    title="Edit Post"
+                    type="button"
+                    className="card-action-btn card-action-btn--edit"
                     onClick={() => handleOpenGalleryModal(item)}
                   >
-                    <Edit size={16} />
+                    <Edit size={14} /> Edit Post
                   </button>
                   <button
-                    className="icon-btn-delete"
-                    title="Delete Post"
+                    type="button"
+                    className="card-action-btn card-action-btn--delete"
                     onClick={() => setDeleteTarget({ type: 'gallery', id: item.id, title: item.title })}
                   >
-                    <Trash2 size={16} />
+                    <Trash2 size={14} /> Delete
                   </button>
                 </div>
               </div>
@@ -316,18 +323,18 @@ export default function AdminHonorsMediaPage() {
 
               <div className="admin-card-actions">
                 <button
-                  className="icon-btn-edit"
-                  title="Edit Medal"
+                  type="button"
+                  className="card-action-btn card-action-btn--edit"
                   onClick={() => handleOpenMilestoneModal(item)}
                 >
-                  <Edit size={15} />
+                  <Edit size={14} /> Edit
                 </button>
                 <button
-                  className="icon-btn-delete"
-                  title="Delete Medal"
+                  type="button"
+                  className="card-action-btn card-action-btn--delete"
                   onClick={() => setDeleteTarget({ type: 'milestone', id: item.id, title: item.title })}
                 >
-                  <Trash2 size={15} />
+                  <Trash2 size={14} /> Delete
                 </button>
               </div>
             </div>
@@ -341,25 +348,24 @@ export default function AdminHonorsMediaPage() {
           <div className="modal-card" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h2><Award size={20} /> {editingMilestone ? 'Edit Medal / Badge' : 'Add New Medal / Badge'}</h2>
-              <button className="modal-close-btn" onClick={() => setShowMilestoneModal(false)}>✕</button>
+              <button type="button" className="modal-close-btn" onClick={() => setShowMilestoneModal(false)}>✕</button>
             </div>
 
             <form onSubmit={handleSaveMilestoneSubmit}>
               <div className="modal-body">
                 <div className="form-group">
-                  <label>Badge Header / Tag (e.g., GOLD MEDAL, ISN HONOR, NABH CERTIFIED)</label>
+                  <label>Badge Header / Tag (e.g., GOLD MEDAL, ISN HONOR)</label>
                   <input
                     type="text"
                     className="form-control"
                     placeholder="e.g. GOLD MEDAL"
                     value={mStat}
                     onChange={(e) => setMStat(e.target.value)}
-                    required
                   />
                 </div>
 
                 <div className="form-group">
-                  <label>Honor Title (e.g., DNB Nephrology Academic Standing)</label>
+                  <label>Honor Title *</label>
                   <input
                     type="text"
                     className="form-control"
@@ -371,29 +377,28 @@ export default function AdminHonorsMediaPage() {
                 </div>
 
                 <div className="form-group">
-                  <label>Institution / Subtitle (e.g., Dr. RML Institute of Medical Sciences, Lucknow)</label>
+                  <label>Institution / Subtitle</label>
                   <input
                     type="text"
                     className="form-control"
                     placeholder="e.g. Dr. RML Institute of Medical Sciences"
                     value={mSub}
                     onChange={(e) => setMSub(e.target.value)}
-                    required
                   />
                 </div>
 
                 <div className="form-group">
-                  <label>Medal / Badge Image URL or File Upload</label>
+                  <label>Medal / Badge Image (URL or Select File)</label>
                   <div className="file-upload-row">
                     <input
                       type="text"
                       className="form-control"
-                      placeholder="Paste Image URL or select file below"
+                      placeholder="Paste Image URL or select file"
                       value={mImgUrl}
                       onChange={(e) => setMImgUrl(e.target.value)}
                     />
                     <label className="file-upload-btn">
-                      <Upload size={14} /> Upload
+                      <Upload size={14} /> Choose File
                       <input
                         type="file"
                         accept="image/*"
@@ -404,13 +409,23 @@ export default function AdminHonorsMediaPage() {
 
                   <div className="img-preview-box">
                     {mImgUrl ? (
-                      <img
-                        src={mImgUrl}
-                        alt="Preview"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src = '/images/gold_medal_badge.jpg';
-                        }}
-                      />
+                      <>
+                        <img
+                          src={mImgUrl}
+                          alt="Preview"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = '/images/gold_medal_badge.jpg';
+                          }}
+                        />
+                        <button
+                          type="button"
+                          className="remove-img-btn"
+                          title="Remove Image"
+                          onClick={() => setMImgUrl('')}
+                        >
+                          <X size={14} /> Remove Image
+                        </button>
+                      </>
                     ) : (
                       <div className="img-preview-placeholder">
                         <ImageIcon size={24} />
@@ -440,7 +455,7 @@ export default function AdminHonorsMediaPage() {
           <div className="modal-card" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h2><ImageIcon size={20} /> {editingGallery ? 'Edit Gallery Photo Post' : 'Add New Photo / Event Post'}</h2>
-              <button className="modal-close-btn" onClick={() => setShowGalleryModal(false)}>✕</button>
+              <button type="button" className="modal-close-btn" onClick={() => setShowGalleryModal(false)}>✕</button>
             </div>
 
             <form onSubmit={handleSaveGallerySubmit}>
@@ -460,7 +475,7 @@ export default function AdminHonorsMediaPage() {
                 </div>
 
                 <div className="form-group">
-                  <label>Post / Event Title</label>
+                  <label>Post / Event Title *</label>
                   <input
                     type="text"
                     className="form-control"
@@ -479,7 +494,6 @@ export default function AdminHonorsMediaPage() {
                     placeholder="e.g. Dr. RML Institute of Medical Sciences, Lucknow"
                     value={gLocation}
                     onChange={(e) => setGLocation(e.target.value)}
-                    required
                   />
                 </div>
 
@@ -491,22 +505,21 @@ export default function AdminHonorsMediaPage() {
                     placeholder="e.g. 2025"
                     value={gYear}
                     onChange={(e) => setGYear(e.target.value)}
-                    required
                   />
                 </div>
 
                 <div className="form-group">
-                  <label>Full HD Image URL or Local Upload</label>
+                  <label>Photo Image (Paste URL or Upload File)</label>
                   <div className="file-upload-row">
                     <input
                       type="text"
                       className="form-control"
-                      placeholder="Paste Image URL or select file"
+                      placeholder="Paste Image URL or choose file below"
                       value={gImgUrl}
                       onChange={(e) => setGImgUrl(e.target.value)}
                     />
                     <label className="file-upload-btn">
-                      <Upload size={14} /> Upload File
+                      <Upload size={14} /> Choose File
                       <input
                         type="file"
                         accept="image/*"
@@ -517,13 +530,23 @@ export default function AdminHonorsMediaPage() {
 
                   <div className="img-preview-box">
                     {gImgUrl ? (
-                      <img
-                        src={gImgUrl}
-                        alt="Preview"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src = '/images/doctor_portrait.jpg';
-                        }}
-                      />
+                      <>
+                        <img
+                          src={gImgUrl}
+                          alt="Preview"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = '/images/doctor_portrait.jpg';
+                          }}
+                        />
+                        <button
+                          type="button"
+                          className="remove-img-btn"
+                          title="Remove Image"
+                          onClick={() => setGImgUrl('')}
+                        >
+                          <X size={14} /> Remove Image
+                        </button>
+                      </>
                     ) : (
                       <div className="img-preview-placeholder">
                         <ImageIcon size={24} />
@@ -534,13 +557,12 @@ export default function AdminHonorsMediaPage() {
                 </div>
 
                 <div className="form-group">
-                  <label>Detailed Description / Caption</label>
+                  <label>Description / Details Content</label>
                   <textarea
                     className="form-control"
-                    placeholder="e.g. Dr. Anmol Pandey delivering an interactive keynote lecture..."
+                    placeholder="Enter details about this event or honor..."
                     value={gCaption}
                     onChange={(e) => setGCaption(e.target.value)}
-                    required
                   />
                 </div>
               </div>
@@ -564,7 +586,7 @@ export default function AdminHonorsMediaPage() {
           <div className="modal-card" style={{ maxWidth: '440px' }} onClick={(e) => e.stopPropagation()}>
             <div className="modal-header" style={{ background: '#DC2626' }}>
               <h2><AlertTriangle size={20} /> Delete Confirmation</h2>
-              <button className="modal-close-btn" onClick={() => setDeleteTarget(null)}>✕</button>
+              <button type="button" className="modal-close-btn" onClick={() => setDeleteTarget(null)}>✕</button>
             </div>
 
             <div className="modal-body" style={{ textAlign: 'center', padding: '24px' }}>

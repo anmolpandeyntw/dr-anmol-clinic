@@ -111,7 +111,7 @@
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 
 .filter-chip {
@@ -210,39 +210,49 @@
 .admin-card-actions {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 
-.icon-btn-edit, .icon-btn-delete {
-  width: 34px;
-  height: 34px;
+.card-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
   border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
   border: 1px solid var(--color-border);
   background: #FFFFFF;
-  color: var(--color-text-secondary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
-.icon-btn-edit:hover {
-  background: #EFF6FF;
-  color: var(--color-medical-blue);
-  border-color: #93C5FD;
+.card-action-btn--edit {
+  color: #0284C7;
+  border-color: #BAE6FD;
+  background: #F0F9FF;
 }
 
-.icon-btn-delete:hover {
-  background: #FEF2F2;
+.card-action-btn--edit:hover {
+  background: #0284C7;
+  color: #FFFFFF;
+}
+
+.card-action-btn--delete {
   color: #EF4444;
   border-color: #FCA5A5;
+  background: #FEF2F2;
+}
+
+.card-action-btn--delete:hover {
+  background: #EF4444;
+  color: #FFFFFF;
 }
 
 /* Gallery Admin Grid */
 .gallery-admin-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 20px;
 }
 
@@ -264,7 +274,7 @@
 
 .g-admin-img-box {
   width: 100%;
-  height: 180px;
+  height: 200px;
   background: #F1F5F9;
   position: relative;
   overflow: hidden;
@@ -332,7 +342,7 @@
   margin: 0;
   line-height: 1.4;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -343,7 +353,7 @@
   border-top: 1px solid var(--color-border);
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   gap: 8px;
 }
 
@@ -451,13 +461,13 @@
 }
 
 textarea.form-control {
-  min-height: 80px;
+  min-height: 90px;
   resize: vertical;
 }
 
 .img-preview-box {
   width: 100%;
-  height: 160px;
+  height: 170px;
   border: 2px dashed var(--color-border);
   border-radius: var(--radius-md);
   background: #F8FAFC;
@@ -473,6 +483,28 @@ textarea.form-control {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.remove-img-btn {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background: rgba(239, 68, 68, 0.9);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.remove-img-btn:hover {
+  background: #DC2626;
 }
 
 .img-preview-placeholder {
@@ -502,6 +534,7 @@ textarea.form-control {
   font-weight: 600;
   color: var(--color-primary);
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .file-upload-btn:hover {
