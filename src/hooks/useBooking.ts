@@ -108,10 +108,13 @@ export function useBooking() {
     const nextTokenNum = sameDateApts.length + 1;
     const generatedId = 'APT-' + Math.random().toString(36).substring(2, 8).toUpperCase();
 
+    const resolvedClinicName = formData.clinic_name || 'Dr. Anmol Pandey (Gomtinagar) Clinic';
+    const resolvedClinicId = formData.clinic_id || 'clinic-private-01';
+
     const newAppointmentRow = {
       id: generatedId,
-      clinic_id: formData.clinic_id || 'clinic-private-01',
-      clinic_name: formData.clinic_name || 'Dr. Anmol Pandey Private Clinic',
+      clinic_id: resolvedClinicId,
+      clinic_name: resolvedClinicName,
       schedule_date: targetDate,
       patient_name: formData.patient_name.trim(),
       patient_mobile: formData.patient_mobile,
@@ -133,7 +136,7 @@ export function useBooking() {
     // Set Instant Confirmation State (<100ms)
     setConfirmation({
       appointment_id: generatedId,
-      clinic_name: formData.clinic_name || 'Dr. Anmol Pandey Private Clinic',
+      clinic_name: resolvedClinicName,
       date: targetDate,
       token_number: nextTokenNum,
       status: 'confirmed'
@@ -145,6 +148,7 @@ export function useBooking() {
     if (isSupabaseConfigured) {
       Promise.resolve(
         supabase.from('appointments').insert([{
+          clinic_id: resolvedClinicId.length === 36 ? resolvedClinicId : null,
           schedule_date: targetDate,
           patient_name: formData.patient_name.trim(),
           patient_mobile: formData.patient_mobile,

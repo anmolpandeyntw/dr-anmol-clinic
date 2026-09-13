@@ -41,20 +41,22 @@ export default function AdminAppointmentsPage({ clinicId: propClinicId }: AdminA
     }
   }, [propClinicId]);
 
-  // Helper to resolve exact clinic name from master clinics list
+  // Helper to resolve exact clinic name dynamically for any clinic
   const getExactClinicName = useCallback((cId: string, fallbackName?: string) => {
     if (cId && cId !== 'unassigned') {
-      const match = clinics.find(c => c.id === cId);
-      if (match) return match.name;
+      const matchById = clinics.find(c => c.id === cId);
+      if (matchById) return matchById.name;
     }
-    if (fallbackName && !fallbackName.includes('TO BE CONFIRMED') && !fallbackName.includes('Private Clinic')) {
-      return fallbackName;
-    }
-    if (fallbackName?.toLowerCase().includes('gomti')) {
-      return clinics.find(c => c.name.toLowerCase().includes('gomti'))?.name || 'Dr. Anmol Pandey (Gomtinagar) Clinic';
-    }
-    if (fallbackName?.toLowerCase().includes('alam')) {
-      return clinics.find(c => c.name.toLowerCase().includes('alam'))?.name || 'Dr. Anmol Pandey (Alambag) Clinic';
+    if (fallbackName && fallbackName.trim().length > 0) {
+      const fbLow = fallbackName.toLowerCase().trim();
+      if (!fbLow.includes('to be confirmed') && !fbLow.includes('private clinic')) {
+        const matchByName = clinics.find(c => {
+          const cLow = c.name.toLowerCase().trim();
+          return cLow === fbLow || cLow.includes(fbLow) || fbLow.includes(cLow);
+        });
+        if (matchByName) return matchByName.name;
+        return fallbackName;
+      }
     }
     return clinics[0]?.name || 'Dr. Anmol Pandey Clinic';
   }, [clinics]);
@@ -84,7 +86,7 @@ export default function AdminAppointmentsPage({ clinicId: propClinicId }: AdminA
           fetched = aptsData.map((row: any) => ({
             id: row.id,
             clinic_id: row.clinic_id || 'unassigned',
-            clinic_name: getExactClinicName(row.clinic_id, row.clinics?.name),
+            clinic_name: getExactClinicName(row.clinic_id, row.clinics?.name || row.clinic_name),
             schedule_date: row.schedule_date,
             patient_name: row.patient_name,
             patient_mobile: row.patient_mobile,
@@ -107,7 +109,7 @@ export default function AdminAppointmentsPage({ clinicId: propClinicId }: AdminA
       if (fetched.length > 0) {
         fetched = fetched.map(dbr => {
           const match = localSaved!.find(ls => ls.id === dbr.id);
-          const resolvedName = getExactClinicName(dbr.clinic_id, dbr.clinic_name);
+          const resolvedName = getExactClinicName(dbr.clinic_id, dbr.clinic_name || match?.clinic_name);
           return match
             ? { ...dbr, status: match.status, clinic_name: resolvedName }
             : { ...dbr, clinic_name: resolvedName };
@@ -134,31 +136,43 @@ export default function AdminAppointmentsPage({ clinicId: propClinicId }: AdminA
     return clinics.find(c => c.id === selectedClinicId) || null;
   }, [clinics, selectedClinicId]);
 
-  // Filter appointments by selected clinic
+  // Dynamic Filter appointments by selected clinic
   const clinicFilteredAppointments = useMemo(() => {
     if (!selectedClinicId) return rawAppointments;
+    const activeClinic = clinics.find(c => c.id === selectedClinicId);
+    if (!activeClinic) return rawAppointments;
+
+    const targetNameLow = activeClinic.name.toLowerCase().trim();
+
     return rawAppointments.filter(apt => {
       if (apt.clinic_id === selectedClinicId) return true;
-      if (activeClinicObj) {
-        const aptNameLow = (apt.clinic_name || '').toLowerCase();
-        const activeNameLow = activeClinicObj.name.toLowerCase();
-        if (activeNameLow.includes('gomti') && aptNameLow.includes('gomti')) return true;
-        if (activeNameLow.includes('alam') && aptNameLow.includes('alam')) return true;
+      if (apt.clinic_name) {
+        const aptNameLow = apt.clinic_name.toLowerCase().trim();
+        if (aptNameLow === targetNameLow || aptNameLow.includes(targetNameLow) || targetNameLow.includes(aptNameLow)) {
+          return true;
+        }
       }
       return false;
     });
-  }, [rawAppointments, selectedClinicId, activeClinicObj]);
+  }, [rawAppointments, selectedClinicId, clinics]);
 
-  // Compute total counts per clinic for clinic cards
+  // Compute total counts per clinic dynamically
   const clinicCountsMap = useMemo(() => {
     const map: Record<string, number> = {};
-    rawAppointments.forEach(apt => {
-      if (apt.clinic_id) {
-        map[apt.clinic_id] = (map[apt.clinic_id] || 0) + 1;
-      }
+    clinics.forEach(c => {
+      const targetNameLow = c.name.toLowerCase().trim();
+      const count = rawAppointments.filter(apt => {
+        if (apt.clinic_id === c.id) return true;
+        if (apt.clinic_name) {
+          const aptNameLow = apt.clinic_name.toLowerCase().trim();
+          return aptNameLow === targetNameLow || aptNameLow.includes(targetNameLow) || targetNameLow.includes(aptNameLow);
+        }
+        return false;
+      }).length;
+      map[c.id] = count;
     });
     return map;
-  }, [rawAppointments]);
+  }, [rawAppointments, clinics]);
 
   // Date-wise booking counter map
   const dateCountsMap = useMemo(() => {
@@ -210,7 +224,7 @@ export default function AdminAppointmentsPage({ clinicId: propClinicId }: AdminA
           await supabase.from('appointments').update({ status: 'in_progress' }).eq('id', appointmentId);
         }
       } catch (err) {
-        console.warn('Supabase action update note:', err);
+        console.warn('Action Supabase sync note:', err);
       }
     }
 
@@ -247,12 +261,7 @@ export default function AdminAppointmentsPage({ clinicId: propClinicId }: AdminA
         </div>
 
         {clinics.map((clinic) => {
-          const count = clinicCountsMap[clinic.id] || rawAppointments.filter(a => {
-            const aName = (a.clinic_name || '').toLowerCase();
-            const cName = clinic.name.toLowerCase();
-            return (cName.includes('gomti') && aName.includes('gomti')) || (cName.includes('alam') && aName.includes('alam'));
-          }).length;
-
+          const count = clinicCountsMap[clinic.id] || 0;
           const isSelected = selectedClinicId === clinic.id;
 
           return (
@@ -290,7 +299,7 @@ export default function AdminAppointmentsPage({ clinicId: propClinicId }: AdminA
               </span>
               <span>•</span>
               <span className="greeting-meta-item">
-                <Clock size={13} /> {activeClinicObj ? activeClinicObj.operating_hours : 'OPD Timings'}
+                <Clock size={13} /> {activeClinicObj ? activeClinicObj.operating_hours || 'OPD Hours' : 'OPD Timings'}
               </span>
             </p>
           </div>
@@ -303,15 +312,15 @@ export default function AdminAppointmentsPage({ clinicId: propClinicId }: AdminA
       </div>
 
       {/* 3. Header Actions */}
-      <div className="admin-appointments-header">
+      <div className="admin-appointments-page__header">
         <div>
           <h1>Appointments Directory</h1>
-          <p className="admin-appointments-sub">
+          <p>
             Filter, manage arrival status, call patients, and view clinical history
           </p>
         </div>
 
-        <div className="admin-appointments-actions">
+        <div className="admin-appointments-page__actions">
           <Button
             variant="outline"
             size="sm"
@@ -325,7 +334,7 @@ export default function AdminAppointmentsPage({ clinicId: propClinicId }: AdminA
       </div>
 
       {errorMsg && (
-        <div className="admin-appointments-error">
+        <div className="admin-appointments-page__error">
           <AlertCircle size={18} />
           <span>{errorMsg}</span>
         </div>
