@@ -23,6 +23,16 @@ export default function AppointmentTokenPage() {
   const [_loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
+  const formatClinicName = (rawName?: string | null) => {
+    if (!rawName || rawName.includes('TO BE CONFIRMED') || rawName.includes('Private Clinic')) {
+      return 'Dr. Anmol Pandey (Gomtinagar) Clinic';
+    }
+    const low = rawName.toLowerCase();
+    if (low.includes('gomti')) return 'Dr. Anmol Pandey (Gomtinagar) Clinic';
+    if (low.includes('alam')) return 'Dr. Anmol Pandey (Alambag) Clinic';
+    return rawName;
+  };
+
   useEffect(() => {
     async function fetchTokenDetails() {
       if (!token) {
@@ -33,7 +43,6 @@ export default function AppointmentTokenPage() {
 
       setLoading(true);
 
-      // Extract details from URL query params (passed during QR code generation)
       const queryNum = searchParams.get('num');
       const dynamicTokenNum = queryNum ? parseInt(queryNum, 10) : 1;
       const queryName = searchParams.get('name');
@@ -41,11 +50,13 @@ export default function AppointmentTokenPage() {
       const queryDate = searchParams.get('date');
       const queryPayment = searchParams.get('payment');
 
+      const resolvedClinic = formatClinicName(queryClinic);
+
       if (!isSupabaseConfigured) {
         setDetails({
           token_number: dynamicTokenNum,
           patient_name: queryName || 'Verified Patient',
-          clinic_name: queryClinic || 'Dr. Anmol Pandey Clinic (Gomtinagar Branch)',
+          clinic_name: resolvedClinic,
           preferred_date: queryDate || 'Scheduled Consultation Date',
           preferred_time: 'OPD Hours',
           payment_status: queryPayment || 'PAY AT CLINIC (₹600)',
@@ -57,7 +68,6 @@ export default function AppointmentTokenPage() {
       }
 
       try {
-        // Fetch from appointments table along with clinic name
         const { data: aptData, error: aptErr } = await supabase
           .from('appointments')
           .select('*, clinics(name)')
@@ -65,7 +75,7 @@ export default function AppointmentTokenPage() {
           .single();
           
         if (!aptErr && aptData) {
-          const dbClinicName = aptData.clinics?.name || queryClinic || 'Dr. Anmol Pandey Clinic';
+          const dbClinicName = formatClinicName(aptData.clinics?.name || queryClinic);
           setDetails({
             token_number: aptData.token_number || dynamicTokenNum,
             patient_name: aptData.patient_name || queryName || 'Verified Patient',
@@ -77,11 +87,10 @@ export default function AppointmentTokenPage() {
             appointment_id: aptData.id
           });
         } else {
-          // Fallback to query params if transient or RPC
           setDetails({
             token_number: dynamicTokenNum,
             patient_name: queryName || 'Patient Consultation',
-            clinic_name: queryClinic || 'Dr. Anmol Pandey Clinic',
+            clinic_name: resolvedClinic,
             preferred_date: queryDate || 'Scheduled Date',
             preferred_time: 'OPD Hours',
             payment_status: queryPayment || 'PAY AT CLINIC (₹600)',
@@ -93,7 +102,7 @@ export default function AppointmentTokenPage() {
         setDetails({
           token_number: dynamicTokenNum,
           patient_name: queryName || 'Patient Consultation',
-          clinic_name: queryClinic || 'Dr. Anmol Pandey Clinic',
+          clinic_name: resolvedClinic,
           preferred_date: queryDate || 'Scheduled Date',
           preferred_time: 'OPD Hours',
           payment_status: queryPayment || 'PAY AT CLINIC (₹600)',
@@ -174,4 +183,3 @@ export default function AppointmentTokenPage() {
     </div>
   );
 }
-

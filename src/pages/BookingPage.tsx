@@ -56,11 +56,14 @@ export default function BookingPage() {
 
   const stepContainerRef = useRef<HTMLDivElement>(null);
 
-  // Smooth scroll to booking step container when step changes (not top of entire page header)
+  // Smooth scroll to booking step container ONLY if out of comfortable view
   useEffect(() => {
     if (stepContainerRef.current) {
-      const topOffset = stepContainerRef.current.getBoundingClientRect().top + window.scrollY - 80;
-      window.scrollTo({ top: Math.max(0, topOffset), behavior: 'smooth' });
+      const rect = stepContainerRef.current.getBoundingClientRect();
+      if (rect.top < 0 || rect.top > 250) {
+        const topOffset = rect.top + window.scrollY - 70;
+        window.scrollTo({ top: Math.max(0, topOffset), behavior: 'smooth' });
+      }
     }
   }, [step]);
 

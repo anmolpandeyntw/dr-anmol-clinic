@@ -12,7 +12,6 @@ import {
   CalendarCheck,
   Users,
   Activity,
-  CheckCircle,
   IndianRupee,
   RefreshCw,
   Calendar,
@@ -20,7 +19,6 @@ import {
   MapPin,
   Building2,
   Sparkles,
-  Phone,
   AlertCircle
 } from 'lucide-react';
 import './AdminDashboardPage.css';
@@ -40,28 +38,11 @@ interface DashboardStats {
   next_patient: PatientSummary | null;
 }
 
-const INITIAL_STATS: DashboardStats = {
-  total: 0,
-  pending: 0,
-  confirmed: 0,
-  checked_in: 0,
-  in_progress: 0,
-  completed: 0,
-  cancelled: 0,
-  no_show: 0,
-  verified_revenue: 0,
-  pending_cash: 0,
-  current_patient: null,
-  next_patient: null,
-};
-
 export default function AdminDashboardPage({ clinicId: propClinicId }: { clinicId: string }) {
   const { clinics } = useClinics();
 
-  // Internal clinic selection state (defaults to propClinicId or empty for 'All Clinics')
   const [selectedClinicId, setSelectedClinicId] = useState<string>(propClinicId || '');
-  const [selectedDateFilter, setSelectedDateFilter] = useState<string>('all'); // 'all' or specific YYYY-MM-DD
-  const [customDate, setCustomDate] = useState<string>(new Date().toISOString().split('T')[0]);
+  const [selectedDateFilter, setSelectedDateFilter] = useState<string>('all');
 
   const [rawAppointments, setRawAppointments] = useState<AppointmentRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -73,14 +54,13 @@ export default function AdminDashboardPage({ clinicId: propClinicId }: { clinicI
   tomorrowObj.setDate(tomorrowObj.getDate() + 1);
   const tomorrowStr = tomorrowObj.toISOString().split('T')[0];
 
-  // Sync prop clinicId if header dropdown changes
   useEffect(() => {
     if (propClinicId !== undefined) {
       setSelectedClinicId(propClinicId);
     }
   }, [propClinicId]);
 
-  // Helper to get exact clinic name from master clinic list
+  // Helper to resolve exact clinic name from master clinics list
   const getExactClinicName = useCallback((cId: string, fallbackName?: string) => {
     if (cId && cId !== 'unassigned') {
       const match = clinics.find(c => c.id === cId);
@@ -89,7 +69,6 @@ export default function AdminDashboardPage({ clinicId: propClinicId }: { clinicI
     if (fallbackName && !fallbackName.includes('TO BE CONFIRMED') && !fallbackName.includes('Private Clinic')) {
       return fallbackName;
     }
-    // Match by Gomtinagar or Alambagh fallback
     if (fallbackName?.toLowerCase().includes('gomti')) {
       return clinics.find(c => c.name.toLowerCase().includes('gomti'))?.name || 'Dr. Anmol Pandey (Gomtinagar) Clinic';
     }
@@ -170,7 +149,7 @@ export default function AdminDashboardPage({ clinicId: propClinicId }: { clinicI
     fetchDashboardData();
   }, [fetchDashboardData]);
 
-  // Active Clinic Info for Banner
+  // Selected Clinic Info
   const activeClinicObj = useMemo(() => {
     if (!selectedClinicId) return null;
     return clinics.find(c => c.id === selectedClinicId) || null;
@@ -191,7 +170,7 @@ export default function AdminDashboardPage({ clinicId: propClinicId }: { clinicI
     });
   }, [rawAppointments, selectedClinicId, activeClinicObj]);
 
-  // Compute total counts per clinic for clinic selector cards
+  // Total counts per clinic
   const clinicCountsMap = useMemo(() => {
     const map: Record<string, number> = {};
     rawAppointments.forEach(apt => {
@@ -202,7 +181,7 @@ export default function AdminDashboardPage({ clinicId: propClinicId }: { clinicI
     return map;
   }, [rawAppointments]);
 
-  // Date-wise booking counter map for daily date bar
+  // Date-wise booking counter map
   const dateCountsMap = useMemo(() => {
     const map: Record<string, number> = {};
     clinicFilteredAppointments.forEach(apt => {
@@ -213,20 +192,15 @@ export default function AdminDashboardPage({ clinicId: propClinicId }: { clinicI
     return map;
   }, [clinicFilteredAppointments]);
 
-  // Sorted list of unique upcoming dates for date counter bar
   const uniqueDatesList = useMemo(() => {
-    const dates = Object.keys(dateCountsMap).sort((a, b) => a.localeCompare(b));
-    return dates;
+    return Object.keys(dateCountsMap).sort((a, b) => a.localeCompare(b));
   }, [dateCountsMap]);
 
-  // Apply Date Filter to appointments list
+  // Apply Date Filter
   const finalFilteredAppointments = useMemo(() => {
     if (selectedDateFilter === 'all') return clinicFilteredAppointments;
-    if (selectedDateFilter === 'custom') {
-      return clinicFilteredAppointments.filter(apt => apt.schedule_date === customDate);
-    }
     return clinicFilteredAppointments.filter(apt => apt.schedule_date === selectedDateFilter);
-  }, [clinicFilteredAppointments, selectedDateFilter, customDate]);
+  }, [clinicFilteredAppointments, selectedDateFilter]);
 
   // Compute Dashboard Stats
   const stats: DashboardStats = useMemo(() => {
@@ -241,7 +215,6 @@ export default function AdminDashboardPage({ clinicId: propClinicId }: { clinicI
     const cancelled = todayApts.filter(a => a.status === 'cancelled').length;
     const no_show = todayApts.filter(a => a.status === 'no_show').length;
 
-    // Financial calculations
     const verified_revenue = clinicFilteredAppointments.reduce((acc, a) => {
       const fee = a.fee_amount || 600;
       const isOnlinePaid = a.payment_method === 'pay_online';
@@ -256,9 +229,30 @@ export default function AdminDashboardPage({ clinicId: propClinicId }: { clinicI
       return (isPayAtClinic && isUnvisited) ? acc + fee : acc;
     }, 0);
 
-    // Current & Next patient for live queue
     const currentApt = todayApts.find(a => a.status === 'in_progress' || a.status === 'checked_in') || null;
     const nextApt = todayApts.find(a => a.id !== currentApt?.id && (a.status === 'confirmed' || a.status === 'pending')) || null;
+
+    const currentPatientSummary: PatientSummary | null = currentApt ? {
+      id: currentApt.id,
+      token_number: currentApt.token_number || 1,
+      patient_name: currentApt.patient_name,
+      patient_mobile: currentApt.patient_mobile,
+      patient_age: currentApt.patient_age || 30,
+      patient_gender: currentApt.patient_gender || 'male',
+      clinic_id: currentApt.clinic_id,
+      status: currentApt.status
+    } : null;
+
+    const nextPatientSummary: PatientSummary | null = nextApt ? {
+      id: nextApt.id,
+      token_number: nextApt.token_number || 2,
+      patient_name: nextApt.patient_name,
+      patient_mobile: nextApt.patient_mobile,
+      patient_age: nextApt.patient_age || 25,
+      patient_gender: nextApt.patient_gender || 'male',
+      clinic_id: nextApt.clinic_id,
+      status: nextApt.status
+    } : null;
 
     return {
       total,
@@ -271,20 +265,8 @@ export default function AdminDashboardPage({ clinicId: propClinicId }: { clinicI
       no_show,
       verified_revenue,
       pending_cash,
-      current_patient: currentApt ? {
-        token_number: currentApt.token_number || 1,
-        patient_name: currentApt.patient_name,
-        patient_mobile: currentApt.patient_mobile,
-        reason_for_visit: currentApt.notes || 'Nephrology Consultation',
-        status: currentApt.status
-      } : null,
-      next_patient: nextApt ? {
-        token_number: nextApt.token_number || 2,
-        patient_name: nextApt.patient_name,
-        patient_mobile: nextApt.patient_mobile,
-        reason_for_visit: nextApt.notes || 'Nephrology Consultation',
-        status: nextApt.status
-      } : null
+      current_patient: currentPatientSummary,
+      next_patient: nextPatientSummary
     };
   }, [clinicFilteredAppointments, todayStr]);
 
@@ -443,29 +425,29 @@ export default function AdminDashboardPage({ clinicId: propClinicId }: { clinicI
         <StatCard
           title="Today's Total OPD Patients"
           value={stats.completed + stats.confirmed + stats.pending}
-          change={`${stats.completed} Checked In / Done`}
-          changeType="positive"
+          trend={`${stats.completed} Checked In / Done`}
+          variant="primary"
           icon={<Users size={22} />}
         />
         <StatCard
           title="Verified Revenue"
           value={`₹${stats.verified_revenue.toLocaleString('en-IN')}`}
-          change="Paid Online & Clinic Counter"
-          changeType="positive"
+          trend="Paid Online & Counter"
+          variant="success"
           icon={<IndianRupee size={22} />}
         />
         <StatCard
           title="Pending Cash to Collect"
           value={`₹${stats.pending_cash.toLocaleString('en-IN')}`}
-          change="Uncollected Counter Fees"
-          changeType="neutral"
+          trend="Uncollected Counter Fees"
+          variant="warning"
           icon={<Activity size={22} />}
         />
         <StatCard
           title="Total Active Bookings"
           value={stats.total}
-          change="All Upcoming & Past Dates"
-          changeType="positive"
+          trend="All Upcoming & Past Dates"
+          variant="default"
           icon={<CalendarCheck size={22} />}
         />
       </div>
@@ -473,21 +455,15 @@ export default function AdminDashboardPage({ clinicId: propClinicId }: { clinicI
       {/* 5. Live Patient Consultation Queue */}
       <div className="admin-dashboard__live-queue">
         <CurrentTokenCard
-          patient={stats.current_patient}
-          onComplete={() => {
-            const activeId = clinicFilteredAppointments.find(a => a.status === 'in_progress' || a.status === 'checked_in')?.id;
-            if (activeId) handleAppointmentAction(activeId, 'complete_consultation');
-          }}
+          currentPatient={stats.current_patient}
+          onComplete={(id) => handleAppointmentAction(id, 'complete_consultation')}
           loading={actionLoading}
         />
 
         <NextPatientCard
-          patient={stats.next_patient}
+          nextPatient={stats.next_patient}
           onCallNext={() => {
-            if (stats.next_patient) {
-              const match = clinicFilteredAppointments.find(a => a.patient_name === stats.next_patient?.patient_name);
-              if (match) handleAppointmentAction(match.id, 'call_patient');
-            }
+            if (stats.next_patient) handleAppointmentAction(stats.next_patient.id, 'call_patient');
           }}
           loading={actionLoading}
         />
